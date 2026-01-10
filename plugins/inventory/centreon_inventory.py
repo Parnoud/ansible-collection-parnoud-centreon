@@ -34,7 +34,7 @@ DOCUMENTATION = r'''
 
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ansible.errors import AnsibleError
-from ansible_collections.minju.centreon.plugins.module_utils.centreon_api import CentreonAPI
+from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
 
 
 class InventoryModule(BaseInventoryPlugin):
