@@ -1,0 +1,23 @@
+---
+namespace: "parnoud"
+name: "centreon"
+version: 1.0.0
+readme: README.md
+authors:
+  - Pierre ARNOUD
+
+description: Centreon modules and plugins for Ansible
+license_file: LICENSE
+
+tags: ["linux", "tools"]
+dependencies:
+  "ansible.utils": "*" 
+
+repository: https://github.com/Parnoud/ansible-collection-parnoud-centreon
+documentation: https://github.com/Parnoud/ansible-collection-parnoud-centreon
+homepage: https://github.com/Parnoud/ansible-collection-parnoud-centreon
+issues: https://github.com/Parnoud/ansible-collection-parnoud-centreon/issues
+
+build_ignore:
+  - .gitignore
+  - changelogs/.plugin-cache.yaml
