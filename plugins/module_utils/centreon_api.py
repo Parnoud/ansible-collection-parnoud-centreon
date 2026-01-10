@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# minju centreon Ansible Modules
+# parnoud centreon Ansible Modules
 # Version 1.0.0
 # Copyright (C) All Rights Reserved.
 
@@ -18,19 +18,19 @@ import os
 class CentreonAPI:
     """Classe utilitaire pour interagir avec l'API v2 de Centreon."""
 
-    def __init__(self, hostname=None, token=None, username=None, password=None, validate_certs=True, timeout=30):
-        # Récupération depuis les variables d'environnement si non fourni
+    def __init__(self, protocol="https", hostname=None, port=443, path="centreon",token=None, username=None, password=None, validate_certs=True, timeout=30):
+        self.protocol = protocol or os.getenv('CENTREON_PROTOCOL')
         self.hostname = hostname or os.getenv('CENTREON_HOSTNAME')
+        self.port = port or os.getenv('CENTREON_PORT')
+        self.path = path or os.getenv('CENTREON_PATH')
         self.validate_certs = validate_certs or os.getenv('CENTREON_VALIDATE_CERTS')
         self.timeout = timeout or os.getenv('CENTREON_TIMEOUT')
         self.headers = {'Content-Type': 'application/json'}
-        self.base_url = f"https://{self.hostname}/api/latest"
+        self.base_url = f"{self.protocol}://{self.hostname}:{self.port}/{self.path}/api/latest"
 
-        # Gestion de l'authentification
         if token and (username or password):
             raise ValueError("Provide either a token or username/password, not both.")
         if not token and not (username or password):
-            # On essaie depuis l'environnement
             env_token = os.getenv('CENTREON_TOKEN')
             env_username = os.getenv('CENTREON_USERNAME')
             env_password = os.getenv('CENTREON_PASSWORD')
@@ -112,11 +112,6 @@ class CentreonAPI:
             except Exception as e:
                 raise Exception(f"Failed to authenticate: {str(e)}")
 
-    def get_hosts(self):
-        """Récupère la liste des hôtes."""
-        data = self._get_all_paginated('GET', 'configuration/hosts')
-        return data
-
     def _get_all_paginated(self, method, endpoint, limit=100):
         """Récupère tous les résultats paginés d'un endpoint."""
         all_results = []
@@ -125,7 +120,10 @@ class CentreonAPI:
             code, data = self._request(
                 method=method,
                 endpoint=endpoint,
-                params={'page': page, 'limit': limit}
+                params={
+                    'page': page,
+                    'limit': limit
+                }
             )
             if code != 200:
                 raise Exception(f"Failed to get data (page {page}): {data}")
@@ -139,3 +137,28 @@ class CentreonAPI:
             page += 1
 
         return all_results
+
+    def get_hosts(self):
+        """Récupère la liste des hôtes."""
+        data = self._get_all_paginated('GET', 'configuration/hosts')
+        return data
+
+    def get_hosts_by_id(self, host_id: int):
+        """Récupère un hôte spécifique."""
+        code, data = self._request('GET', f'monitoring/hosts/{host_id}')
+        if code == 200:
+            return json.loads(data)
+        elif code == 404:
+            return None
+        else:
+            raise Exception(f"Failed to get host: {data}")
+
+    def get_hosts_filter(self, filter: dict):
+        """Récupère un hôte spécifique."""
+        code, data = self._request('GET', 'monitoring/hosts')
+        if code == 200:
+            return json.loads(data)
+        elif code == 404:
+            return None
+        else:
+            raise Exception(f"Failed to get host: {data}")

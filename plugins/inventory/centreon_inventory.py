@@ -15,11 +15,26 @@ DOCUMENTATION = r'''
     description:
         - Fetches hosts from Centreon API v2.
     options:
+        protocol:
+            description: URL to Centreon API v2.
+            required: false
+            env:
+              - name: CENTREON_PROTOCOL
         hostname:
             description: URL to Centreon API v2.
             required: false
             env:
               - name: CENTREON_HOSTNAME
+        port:
+            description: URL to Centreon API v2.
+            required: false
+            env:
+              - name: CENTREON_PORT
+        path:
+            description: URL to Centreon API v2.
+            required: false
+            env:
+              - name: CENTREON_PATH
         username:
             description: Username to Centreon API v2
             required: false
@@ -30,8 +45,25 @@ DOCUMENTATION = r'''
             required: false
             env:
               - name: CENTREON_PASSWORD
+        token:
+            description: Token to Centreon API v2
+            required: false
+            env:
+              - name: CENTREON_TOKEN
+        validate_certs:
+            description: Whether to validate SSL certificates.
+            type: bool
+            default: true
+            env:
+              - name: CENTREON_VALIDATE_CERTS
+        timeout:
+            description: Timeout for API requests.
+            type: int
+            default: 30
+            env:
+              - name: CENTREON_TIMEOUT
 '''
-
+import os
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ansible.errors import AnsibleError
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
@@ -46,15 +78,17 @@ class InventoryModule(BaseInventoryPlugin):
         self.config = None
 
     def _get_data(self):
-        hostname = self.get_option('hostname')
-        token = self.get_options('token') if "token" in self.config else None
-        username = self.get_option('username') if "username" in self.config else None
-        password = self.get_option('password') if "password" in self.config else None
-        validate_certs = self.get_option('validate_verts') if "validate_certs" in self.config else False
-        timeout = self.get_option('timeout') if "timeout" in self.config else 30
+        protocol = self.get_option('protocol') or os.getenv('CENTREON_PROTOCOL') if "protocol" in self.config else False
+        hostname = self.get_option('hostname') or os.getenv('CENTREON_HOSTNAME') if "hostname" in self.config else False
+        port = self.get_option('port') or os.getenv('CENTREON_PORT') if "port" in self.config else False
+        token = self.get_options('token') or os.getenv('CENTREON_TOKEN') if "token" in self.config else False
+        username = self.get_option('username') or os.getenv('CENTREON_USERNAME') if "username" in self.config else False
+        password = self.get_option('password') or os.getenv('CENTREON_PASSWORD') if "password" in self.config else False
+        validate_certs = self.get_option('validate_certs') or os.getenv('CENTREON_VALIDATE_CERTS') if "validate_certs" in self.config else False
+        timeout = self.get_option('timeout') or os.getenv('CENTREON_TIMEOUT') if "timeout" in self.config else 30
 
         try:
-            api = CentreonAPI(hostname=hostname, token=token, username=username, password=password, validate_certs=validate_certs, timeout=timeout)
+            api = CentreonAPI(protocol=protocol, hostname=hostname, port=port, token=token, username=username, password=password, validate_certs=validate_certs, timeout=timeout)
             return api.get_hosts()
         except Exception as e:
             raise AnsibleError(f"Error fetching hosts from Centreon API: {str(e)}")
