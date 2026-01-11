@@ -62,7 +62,12 @@ DOCUMENTATION = r'''
             default: 30
             env:
               - name: CENTREON_TIMEOUT
+        search:
+            description: search criteria for fetching hosts.
+            type: list or dict
+            required: false
 '''
+import json
 import os
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ansible.errors import AnsibleError
@@ -78,18 +83,31 @@ class InventoryModule(BaseInventoryPlugin):
         self.config = None
 
     def _get_data(self):
-        protocol = self.get_option('protocol') or os.getenv('CENTREON_PROTOCOL') if "protocol" in self.config else False
-        hostname = self.get_option('hostname') or os.getenv('CENTREON_HOSTNAME') if "hostname" in self.config else False
-        port = self.get_option('port') or os.getenv('CENTREON_PORT') if "port" in self.config else False
-        token = self.get_options('token') or os.getenv('CENTREON_TOKEN') if "token" in self.config else False
-        username = self.get_option('username') or os.getenv('CENTREON_USERNAME') if "username" in self.config else False
-        password = self.get_option('password') or os.getenv('CENTREON_PASSWORD') if "password" in self.config else False
-        validate_certs = self.get_option('validate_certs') or os.getenv('CENTREON_VALIDATE_CERTS') if "validate_certs" in self.config else False
-        timeout = self.get_option('timeout') or os.getenv('CENTREON_TIMEOUT') if "timeout" in self.config else 30
+        protocol = self.get_option('protocol') or os.getenv('CENTREON_PROTOCOL') if "protocol" in self.config else None
+        hostname = self.get_option('hostname') or os.getenv('CENTREON_HOSTNAME') if "hostname" in self.config else None
+        port = self.get_option('port') or os.getenv('CENTREON_PORT') if "port" in self.config else None
+        token = self.get_options('token') or os.getenv('CENTREON_TOKEN') if "token" in self.config else None
+        username = self.get_option('username') or os.getenv('CENTREON_USERNAME') if "username" in self.config else None
+        password = self.get_option('password') or os.getenv('CENTREON_PASSWORD') if "password" in self.config else None
+        validate_certs = self.get_option('validate_certs') or os.getenv('CENTREON_VALIDATE_CERTS') if "validate_certs" in self.config else None
+        timeout = self.get_option('timeout') or os.getenv('CENTREON_TIMEOUT') if "timeout" in self.config else None
+        search_criteria = self.get_option('search') or None
+        filter_criteria = None
+        if search_criteria:
+            filter_criteria = {}
+            filter_criteria['search'] = json.dumps(search_criteria)
 
         try:
-            api = CentreonAPI(protocol=protocol, hostname=hostname, port=port, token=token, username=username, password=password, validate_certs=validate_certs, timeout=timeout)
-            return api.get_hosts()
+            api = CentreonAPI(protocol=protocol,
+                              hostname=hostname,
+                              port=port,
+                              token=token,
+                              username=username,
+                              password=password,
+                              validate_certs=validate_certs,
+                              timeout=timeout)
+
+            return api.find_all_host_configuration(query_parameters=filter_criteria)
         except Exception as e:
             raise AnsibleError(f"Error fetching hosts from Centreon API: {str(e)}")
 

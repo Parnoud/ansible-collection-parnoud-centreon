@@ -16,9 +16,9 @@ import os
 
 
 class CentreonAPI:
-    """Classe utilitaire pour interagir avec l'API v2 de Centreon."""
+    """CLass to interact with Centreon API v2."""
 
-    def __init__(self, protocol="https", hostname=None, port=443, path="centreon",token=None, username=None, password=None, validate_certs=True, timeout=30):
+    def __init__(self, protocol="https", hostname=None, port=443, path="centreon", token=None, username=None, password=None, validate_certs=True, timeout=30):
         self.protocol = protocol or os.getenv('CENTREON_PROTOCOL')
         self.hostname = hostname or os.getenv('CENTREON_HOSTNAME')
         self.port = port or os.getenv('CENTREON_PORT')
@@ -55,13 +55,13 @@ class CentreonAPI:
         self.session_token = None
         self._authenticate()
 
-    def _request(self, method, endpoint, data=None, params=None):
-        """Effectue une requête HTTP vers l'API Centreon."""
+    def _request(self, method, endpoint, data=None, query_parameters=None):
+        """Request to centreon API v2 endpoint with given method, data and query parameters."""
         url = f"{self.base_url}/{endpoint}"
 
         # Ajout des paramètres à l'URL si présents
-        if params:
-            query_string = urlencode(params)
+        if query_parameters:
+            query_string = urlencode(query_parameters)
             url = f"{url}?{query_string}"
 
         try:
@@ -80,7 +80,7 @@ class CentreonAPI:
             return 0, str(e)
 
     def _authenticate(self):
-        """Authentification par token ou login/mot de passe."""
+        """Authentucate on centreon APIv2 with username/password or token."""
         if self.auth_method == 'token':
             # Authentification par token
             self.headers = {
@@ -112,40 +112,52 @@ class CentreonAPI:
             except Exception as e:
                 raise Exception(f"Failed to authenticate: {str(e)}")
 
-    def _get_all_paginated(self, method, endpoint, limit=100):
-        """Récupère tous les résultats paginés d'un endpoint."""
+    def _get_all_paginated(self, method, endpoint, params=None):
+        """Return all data from a paginated endpoint."""
         all_results = []
         page = 1
+        query_parameters = {}
         while True:
+            pages = {
+                'page': page
+            }
+            limites = {
+                'limit': 100
+            }
+
+            query_parameters.update(pages)
+            query_parameters.update(limites)
+
+            if params:
+                query_parameters.update(params)
+
             code, data = self._request(
                 method=method,
                 endpoint=endpoint,
-                params={
-                    'page': page,
-                    'limit': limit
-                }
+                query_parameters=query_parameters
             )
+
             if code != 200:
                 raise Exception(f"Failed to get data (page {page}): {data}")
 
             response = json.loads(data)
             all_results.extend(response['result'])
 
-            if not response['result'] or page >= response['meta']['total'] / limit + 1:
+            if not response['result'] or page >= response['meta']['total'] / 100 + 1:
                 break
 
             page += 1
 
         return all_results
 
-    def get_hosts(self):
-        """Récupère la liste des hôtes."""
-        data = self._get_all_paginated('GET', 'configuration/hosts')
+    def find_all_host_configuration(self, query_parameters=None):
+        """Return host configurations filtered by query parameters."""
+        data = self._get_all_paginated('GET', 'configuration/hosts', params=query_parameters)
         return data
 
-    def get_hosts_by_id(self, host_id: int):
-        """Récupère un hôte spécifique."""
-        code, data = self._request('GET', f'monitoring/hosts/{host_id}')
+    def get_host(self, host_id: int):
+        """Get host configuration by ID."""
+        code, data = self._request('GET', f'configuration/hosts/{host_id}')
         if code == 200:
             return json.loads(data)
         elif code == 404:
@@ -153,12 +165,10 @@ class CentreonAPI:
         else:
             raise Exception(f"Failed to get host: {data}")
 
-    def get_hosts_filter(self, filter: dict):
-        """Récupère un hôte spécifique."""
-        code, data = self._request('GET', 'monitoring/hosts')
-        if code == 200:
+    def create_host(self, host_data):
+        """Crée un nouvel hôte."""
+        code, data = self._request('POST', 'configuration/hosts', host_data)
+        if code == 201:
             return json.loads(data)
-        elif code == 404:
-            return None
         else:
-            raise Exception(f"Failed to get host: {data}")
+            raise Exception(f"Failed to create host: {data}")
