@@ -16,7 +16,7 @@ description:
     - Add, remove, or modify hosts in Centreon.
 author: "Pierre ARNOUD (@parnoud)"
 options:
-    api_url:
+    hostname:
         description: URL to Centreon API v2.
         required: true
         type: str
@@ -80,7 +80,7 @@ options:
 EXAMPLES = r'''
 - name: Add a host
   parnoud.centreon.centreon_host:
-    api_url: "https://centreon.example.com/api/latest"
+    hostname: "centreon.example.com"
     token: "ton_token"
     name: "mon_serveur"
     state: present
@@ -94,12 +94,13 @@ EXAMPLES = r'''
 
 - name: Remove a host
   parnoud.centreon.centreon_host:
-    api_url: "https://centreon.example.com/api/latest"
+    hostname: "centreon.example.com"
     token: "ton_token"
     name: "mon_serveur"
     state: absent
 '''
 
+import os
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
 
@@ -107,10 +108,15 @@ from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api impo
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            api_url=dict(required=True, type='str'),
+            protocol=dict(required=False, type='str'),
+            hostname=dict(required=False, type='str'),
+            port=dict(required=False, type='int'),
+            path=dict(required=False, type='str'),
             token=dict(required=False, type='str', no_log=True),
             username=dict(required=False, type='str'),
             password=dict(required=False, type='str', no_log=True),
+            validate_certs=dict(required=False, type='bool'),
+            timeout=dict(required=False, type='int'),
             name=dict(required=True, type='str'),
             state=dict(default='present', choices=['present', 'absent'], type='str'),
             alias=dict(type='str'),
@@ -129,10 +135,13 @@ def main():
         mutually_exclusive=[['token', 'username'], ['token', 'password']],
     )
 
-    api_url = module.params['api_url']
-    token = module.params['token']
-    username = module.params['username']
-    password = module.params['password']
+    protocol = module.params['protocol'] or os.getenv('CENTREON_PROTOCOL')
+    hostname = module.params['hostname'] or os.getenv('CENTREON_HOSTNAME')
+    port = module.params['port'] or os.getenv('CENTREON_PORT')
+    path = module.params['path'] or os.getenv('CENTREON_PATH')
+    token = module.params['token'] or os.getenv('CENTREON_TOKEN')
+    username = module.params['username'] or os.getenv('CENTREON_USERNAME')
+    password = module.params['password'] or os.getenv('CENTREON_PASSWORD')
     name = module.params['name']
     state = module.params['state']
     alias = module.params.get('alias')
@@ -147,7 +156,7 @@ def main():
     enabled = module.params.get('enabled')
 
     try:
-        api = CentreonAPI(api_url, token=token, username=username, password=password)
+        api = CentreonAPI(hostname=hostname, protocol=protocol, port=port, path=path, token=token, username=username, password=password)
 
         # Vérifie si l'hôte existe
         existing_host = None
