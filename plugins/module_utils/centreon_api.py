@@ -165,8 +165,8 @@ class CentreonAPI:
         else:
             raise Exception(f"Failed to get host: {data}")
 
-    def create_host(self, host_data):
-        """Crée un nouvel hôte."""
+    def create_host_configuration(self, host_data):
+        """Create a host configuration"""
         code, data = self._request('POST', 'configuration/hosts', host_data)
         if code == 201:
             return json.loads(data)
