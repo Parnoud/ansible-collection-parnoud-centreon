@@ -132,7 +132,7 @@ class InventoryModule(BaseInventoryPlugin):
         attributes = self.get_option('attributes') or []
         for host in data:
             self.inventory.add_host(host['name'])
-
+            print(attributes)
             if 'templates' in attributes:
                 for template in host['templates']:
                     self.inventory.add_group(template['name'])
@@ -152,7 +152,7 @@ class InventoryModule(BaseInventoryPlugin):
             self.inventory.set_variable(host['name'], "alias", host['alias'])
             self.inventory.set_variable(host['name'], "address", host['address'])
 
-            if 'templates' in attributes:
+            if 'monitoring_server' in attributes:
                 self.inventory.set_variable(host['name'], "templates", host['monitoring_server'])
             if 'templates' in attributes:
                 self.inventory.set_variable(host['name'], "list_templates", host['templates'])
