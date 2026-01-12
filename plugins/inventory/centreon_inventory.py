@@ -15,11 +15,6 @@ DOCUMENTATION = r'''
     description:
         - Fetches hosts from Centreon API v2.
     options:
-        protocol:
-            description: URL to Centreon API v2.
-            required: false
-            env:
-              - name: CENTREON_PROTOCOL
         hostname:
             description: URL to Centreon API v2.
             required: false
@@ -76,6 +71,7 @@ import os
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ansible.errors import AnsibleError
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
+from ansible_collections.parnoud.centreon.plugins.module_utils.host import find_all_host_configuration
 
 
 class InventoryModule(BaseInventoryPlugin):
@@ -87,7 +83,6 @@ class InventoryModule(BaseInventoryPlugin):
         self.config = None
 
     def _get_data(self):
-        protocol = self.get_option('protocol') or os.getenv('CENTREON_PROTOCOL') if "protocol" in self.config else None
         hostname = self.get_option('hostname') or os.getenv('CENTREON_HOSTNAME') if "hostname" in self.config else None
         port = self.get_option('port') or os.getenv('CENTREON_PORT') if "port" in self.config else None
         token = self.get_options('token') or os.getenv('CENTREON_TOKEN') if "token" in self.config else None
@@ -102,8 +97,7 @@ class InventoryModule(BaseInventoryPlugin):
             filter_criteria['search'] = json.dumps(search_criteria)
 
         try:
-            api = CentreonAPI(protocol=protocol,
-                              hostname=hostname,
+            api = CentreonAPI(hostname=hostname,
                               port=port,
                               token=token,
                               username=username,
@@ -111,7 +105,7 @@ class InventoryModule(BaseInventoryPlugin):
                               validate_certs=validate_certs,
                               timeout=timeout)
 
-            return api.find_all_host_configuration(query_parameters=filter_criteria)
+            return find_all_host_configuration(api, query_parameters=filter_criteria)
         except Exception as e:
             raise AnsibleError(f"Error fetching hosts from Centreon API: {str(e)}")
 
@@ -132,7 +126,7 @@ class InventoryModule(BaseInventoryPlugin):
         attributes = self.get_option('attributes') or []
         for host in data:
             self.inventory.add_host(host['name'])
-            print(attributes)
+
             if 'templates' in attributes:
                 for template in host['templates']:
                     self.inventory.add_group(template['name'])
@@ -170,4 +164,3 @@ class InventoryModule(BaseInventoryPlugin):
                 self.inventory.set_variable(host['name'], "list_groups", host['groups'])
             if 'is_activated' in attributes:
                 self.inventory.set_variable(host['name'], "is_activated", host['is_activated'])
-

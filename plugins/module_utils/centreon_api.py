@@ -12,45 +12,29 @@ from ansible.module_utils.urls import open_url, ConnectionError, SSLValidationEr
 from ansible.module_utils.six.moves.urllib.error import HTTPError, URLError
 from ansible.module_utils.six.moves.urllib.parse import urlencode
 import json
-import os
 
 
 class CentreonAPI:
     """CLass to interact with Centreon API v2."""
 
-    def __init__(self, protocol="https", hostname=None, port=443, path="centreon", token=None, username=None, password=None, validate_certs=True, timeout=30):
-        self.protocol = protocol or os.getenv('CENTREON_PROTOCOL')
-        self.hostname = hostname or os.getenv('CENTREON_HOSTNAME')
-        self.port = port or os.getenv('CENTREON_PORT')
-        self.path = path or os.getenv('CENTREON_PATH')
-        self.validate_certs = validate_certs or os.getenv('CENTREON_VALIDATE_CERTS')
-        self.timeout = timeout or os.getenv('CENTREON_TIMEOUT')
-        self.headers = {'Content-Type': 'application/json'}
-        self.base_url = f"{self.protocol}://{self.hostname}:{self.port}/{self.path}/api/latest"
-
-        if token and (username or password):
-            raise ValueError("Provide either a token or username/password, not both.")
-        if not token and not (username or password):
-            env_token = os.getenv('CENTREON_TOKEN')
-            env_username = os.getenv('CENTREON_USERNAME')
-            env_password = os.getenv('CENTREON_PASSWORD')
-            if env_token and (env_username or env_password):
-                raise ValueError("Ambiguous authentication in environment: provide either a token or username/password.")
-            if env_token:
-                token = env_token
-            elif env_username and env_password:
-                username = env_username
-                password = env_password
-            else:
-                raise ValueError("No authentication method provided (token or username/password).")
+    def __init__(self, protocol=None, hostname=None, port=None, path=None, token=None, username=None, password=None, validate_certs=None, timeout=None):
+        self.protocol = protocol if protocol else 'http'
+        self.hostname = hostname if hostname else 'localhost'
+        self.port = port if port else 80
+        self.path = path if path else 'centreon/api/latest'
+        self.validate_certs = validate_certs if validate_certs is not None else False
+        self.timeout = timeout if timeout else 30
+        self._build_url()
 
         if token:
             self.auth_method = 'token'
             self.auth_token = token
-        else:
+        elif username and password:
             self.auth_method = 'username_password'
             self.auth_username = username
             self.auth_password = password
+        else:
+            raise ValueError("Either token or username and password must be provided for authentication.")
 
         self.session_token = None
         self._authenticate()
@@ -58,12 +42,10 @@ class CentreonAPI:
     def _request(self, method, endpoint, data=None, query_parameters=None):
         """Request to centreon API v2 endpoint with given method, data and query parameters."""
         url = f"{self.base_url}/{endpoint}"
-
-        # Ajout des paramètres à l'URL si présents
         if query_parameters:
             query_string = urlencode(query_parameters)
             url = f"{url}?{query_string}"
-
+            print(url)
         try:
             response = open_url(
                 url=url,
@@ -80,16 +62,17 @@ class CentreonAPI:
             return 0, str(e)
 
     def _authenticate(self):
-        """Authentucate on centreon APIv2 with username/password or token."""
+        """Authenticate on centreon APIv2 with username/password or token."""
         if self.auth_method == 'token':
-            # Authentification par token
             self.headers = {
                 'ContentType' : 'application/json',
                 'X-AUTH-TOKEN' : self.auth_token
             }
             self.session_token = self.auth_token
         else:
-            # Authentification par login/mot de passe
+            self.headers = {
+                'ContentType' : 'application/json'
+            }
             auth_data = {
                 'security': {
                     'credentials': {
@@ -98,6 +81,7 @@ class CentreonAPI:
                     }
                 }
             }
+
             try:
                 code, data = self._request('POST', 'login', auth_data)
                 if code == 200:
@@ -137,38 +121,23 @@ class CentreonAPI:
                 query_parameters=query_parameters
             )
 
-            if code != 200:
-                raise Exception(f"Failed to get data (page {page}): {data}")
+            if code == 403:
+                raise Exception(f"Forbidden: {json.loads(data)['message']}")
+            elif code != 200:
+                raise Exception(f"Failed to get paginated data: {json.loads(data)['message']}")
 
             response = json.loads(data)
-            all_results.extend(response['result'])
 
-            if not response['result'] or page >= response['meta']['total'] / 100 + 1:
+            all_results.extend(response['result'])
+            if not response['result'] or len(all_results) >= response['meta']['total'] or response['meta']['total'] <= 100:
                 break
 
             page += 1
 
         return all_results
 
-    def find_all_host_configuration(self, query_parameters=None):
-        """Return host configurations filtered by query parameters."""
-        data = self._get_all_paginated('GET', 'configuration/hosts', params=query_parameters)
-        return data
-
-    def get_host(self, host_id: int):
-        """Get host configuration by ID."""
-        code, data = self._request('GET', f'configuration/hosts/{host_id}')
-        if code == 200:
-            return json.loads(data)
-        elif code == 404:
-            return None
-        else:
-            raise Exception(f"Failed to get host: {data}")
-
-    def create_host_configuration(self, host_data):
-        """Create a host configuration"""
-        code, data = self._request('POST', 'configuration/hosts', host_data)
-        if code == 201:
-            return json.loads(data)
-        else:
-            raise Exception(f"Failed to create host: {data}")
+    def _build_url(self):
+        url = '{0}://{1}:{2}'.format(self.protocol, self.hostname, self.port)
+        if self.path:
+            url = '{0}/{1}'.format(url, self.path)
+        self.base_url = url
