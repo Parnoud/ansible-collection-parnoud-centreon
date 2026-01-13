@@ -91,8 +91,8 @@ def main():
     spec = {
         'state': {
             'type': 'str',
-            'default': 'present',
-            'choices': ['present', 'absent', 'update'],
+            'default': 'create',
+            'choices': ['create', 'delete', 'update'],
         },
         'hostname': {
             'type': 'str',
@@ -165,7 +165,7 @@ def main():
         timeout=module.params.get('timeout'),
     )
 
-    if module.params['state'] == 'present':
+    if module.params['state'] == 'create':
         host_data={
             'monitoring_server_id': module.params['monitoring_server_id'],
             'name': module.params['name'],
@@ -194,7 +194,7 @@ def main():
         if partially_update_host_configuration(api, host_id, host_data):
             module.exit_json(changed=True, result={"host_id": host_id, "status": "updated"})
 
-    elif module.params['state'] == 'absent':
+    elif module.params['state'] == 'delete':
         host_id = None
 
         if module.params['name']:
