@@ -20,7 +20,7 @@ description:
 author: "Pierre ARNOUD (@parnoud)"
 state:
         description: Desired state of the host.
-        choices: ['present', 'absent', 'update']
+        choices: ['present', 'absent', 'update', 'duplicate']
         default: 'present'
         type: str
     hostname:
@@ -73,14 +73,23 @@ state:
         description: Geographical coordinates of the host.
         required: false
         type: str
-    comments:
-        description: Comments for the host.
+    comment:
+        description: Comment for the host.
         required: false
         type: str
     hosts:
         description: Dictionary of hosts to be associated with the host group.
         required: false
-        type: dict
+        type: list
+        default: []
+    ids:
+        description: Dictionary of hosts ids to duplicate.
+        required: false
+        type: list
+    nb_duplicates:
+        description: Number of duplicates to create.
+        required: false
+        type: int
 '''
 
 EXAMPLES = r'''
@@ -89,7 +98,7 @@ EXAMPLES = r'''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
-from ansible_collections.parnoud.centreon.plugins.module_utils.host_group import delete_host_group, update_host_group, list_all_host_groups, add_host_group
+from ansible_collections.parnoud.centreon.plugins.module_utils.host_group import delete_host_group, update_host_group, list_all_host_groups, add_host_group, duplicate_multiple_host_groups
 import json
 
 def main():
@@ -99,7 +108,7 @@ def main():
         'state': {
             'type': 'str',
             'default': 'create',
-            'choices': ['create', 'delete', 'update'],
+            'choices': ['create', 'delete', 'update', 'duplicate'],
         },
         'hostname': {
             'type': 'str',
@@ -144,24 +153,37 @@ def main():
         'alias': {
             'type': 'str',
             'required': False,
+            'default': None,
         },
         'icon_id': {
             'type': 'int',
             'required': False,
+            'default': None,
         },
         'geo_coords': {
             'type': 'str',
             'required': False,
+            'default': None,
         },
-        'comments': {
+        'comment': {
             'type': 'str',
             'required': False,
+            'default': None,
         },
         'hosts': {
-            'type': 'dict',
-            'elements': 'str',
+            'type': 'list',
+            'required': False,
+            'default': [],
+        },
+        'ids': {
+            'type': 'list',
             'required': False,
         },
+        'nb_duplicates' : {
+            'type': 'int',
+            'required': False,
+        },
+
     }
 
     module = AnsibleModule(
@@ -182,12 +204,12 @@ def main():
     )
 
     host_group_data = {
-        'name': module.params.get('name'),
         'alias': module.params.get('alias'),
-        'icon_id': module.params.get('icon_id'),
+        'comment': module.params.get('comment'),
         'geo_coords': module.params.get('geo_coords'),
-        'comments': module.params.get('comments'),
         'hosts': module.params.get('hosts'),
+        'icon_id': module.params.get('icon_id'),
+        'name': module.params.get('name'),
     }
 
     host_group_data = {k: v for k, v in host_group_data.items() if v is not None}
@@ -243,5 +265,7 @@ def main():
         else:
             module.fail_json(msg="Host ID or name must be provided for update operation.")
 
+    elif module.params['state'] == 'duplicate':
+        result=duplicate_multiple_host_groups(api, module.params.get('ids'), module.params.get('nb_duplicates'))
 if __name__ == '__main__':
     main()

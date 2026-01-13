@@ -83,7 +83,7 @@ class CentreonAPI:
             }
 
             try:
-                code, data = self._request('POST', 'login', auth_data)
+                code, data = self._request(method='POST', endpoint='login', data=auth_data)
                 if code == 200:
                     response = json.loads(data)
                     self.session_token = response['security']['token']

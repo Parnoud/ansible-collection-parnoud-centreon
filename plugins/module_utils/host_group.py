@@ -18,7 +18,7 @@ def list_all_host_groups_configuration(CentreonAPI_obj, query_parameters=None):
 
 def add_host_group(CentreonAPI_obj, host_group_data):
     """Add a new host group configuration."""
-    code, data = CentreonAPI_obj._request('POST', 'configuration/hosts/groups', host_group_data)
+    code, data = CentreonAPI_obj._request('POST', 'configuration/hosts/groups', data=host_group_data)
     if code == 201:
         return json.loads(data)
     elif code == 400:
@@ -31,7 +31,7 @@ def add_host_group(CentreonAPI_obj, host_group_data):
     elif code == 409:
         raise Exception(f"Conflict: {json.loads(data)['message']}")
     else:
-        raise Exception(f"Failed: {json.loads(data)['message']}")
+        raise Exception(f"Failed code {code}: {json.loads(data)['message']} {host_group_data}")
 
 
 def get_host_groups(CentreonAPI_obj, host_group_id: int):
@@ -89,6 +89,26 @@ def delete_multiple_host_groups(CentreonAPI_obj, host_group_ids: list):
         raise Exception(f"Forbidden: {json.loads(data)['message']}")
     else:
         raise Exception(f"Failed to delete host groups: {json.loads(data)['message']}")
+
+
+def duplicate_multiple_host_groups(CentreonAPI_obj, ids, nb_duplicates: int):
+    """Duplicate multiple host groups from configuration."""
+    data_duplicate = {
+        "ids": ids,
+        "nb_duplicates": nb_duplicates
+    }
+
+    code, data = CentreonAPI_obj._request('POST', 'configuration/hosts/groups/_duplicate', data=data_duplicate)
+    if code == 204:
+        return json.loads(data)
+    elif code == 401:
+        raise Exception(f"Unauthorized: {json.loads(data)['message']}")
+    elif code == 403:
+        raise Exception(f"Forbidden: {json.loads(data)['message']}")
+    elif code == 404:
+        raise Exception(f"Not found: {json.loads(data)['message']}")
+    else:
+        raise Exception(f"Failed to duplicate host groups code {code}: {json.loads(data)['message']} {data_duplicate}")
 
 
 def list_all_host_groups_by_hostid(CentreonAPI_obj, host_id: int, query_parameters=None):
