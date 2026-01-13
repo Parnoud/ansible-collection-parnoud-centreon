@@ -16,7 +16,7 @@ def list_all_host_groups_configuration(CentreonAPI_obj, query_parameters=None):
     return CentreonAPI_obj._get_all_paginated('GET', 'configuration/hosts/groups', params=query_parameters)
 
 
-def add__host_group(CentreonAPI_obj, host_group_data):
+def add_host_group(CentreonAPI_obj, host_group_data):
     """Add a new host group configuration."""
     code, data = CentreonAPI_obj._request('POST', 'configuration/hosts/groups', host_group_data)
     if code == 201:
@@ -51,7 +51,7 @@ def delete_host_group(CentreonAPI_obj, host_group_id: int):
     """Delete host group configuration by ID."""
     code, data = CentreonAPI_obj._request('DELETE', f'configuration/hosts/groups/{host_group_id}')
     if code == 204:
-        return json.loads(data)
+        return True
     elif code == 403:
         raise Exception(f"Forbidden: {json.loads(data)['message']}")
     elif code == 404:
@@ -64,7 +64,7 @@ def update_host_group(CentreonAPI_obj, host_group_id: int, host_group_data):
     """Update host group."""
     code, data = CentreonAPI_obj._request('PUT', f'configuration/hosts/groups/{host_group_id}', host_group_data)
     if code == 204:
-        return json.loads(data)
+        return True
     elif code == 400:
         raise Exception(f"Indicates that the server cannot or will not process the \
                         request due to something that is perceived to be a client error: {json.loads(data)['message']}")

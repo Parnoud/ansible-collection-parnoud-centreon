@@ -15,6 +15,8 @@ module: manage_host
 short_description: Create a host in Centreon via API v2
 description:
     - Create a host in Centreon.
+    - Update a host in Centreon.
+    - Delete a host in Centreon.
 author: "Pierre ARNOUD (@parnoud)"
 options:
     state:
