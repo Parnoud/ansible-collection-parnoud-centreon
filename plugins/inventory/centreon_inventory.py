@@ -95,7 +95,7 @@ class InventoryModule(BaseInventoryPlugin):
         if search_criteria:
             filter_criteria = {}
             filter_criteria['search'] = json.dumps(search_criteria)
-
+            print(filter_criteria)
         try:
             api = CentreonAPI(hostname=hostname,
                               port=port,

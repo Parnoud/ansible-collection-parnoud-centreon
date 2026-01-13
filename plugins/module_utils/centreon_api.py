@@ -45,7 +45,7 @@ class CentreonAPI:
         if query_parameters:
             query_string = urlencode(query_parameters)
             url = f"{url}?{query_string}"
-            print(url)
+
         try:
             response = open_url(
                 url=url,
@@ -101,6 +101,7 @@ class CentreonAPI:
         all_results = []
         page = 1
         query_parameters = {}
+
         while True:
             pages = {
                 'page': page

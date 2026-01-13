@@ -60,11 +60,11 @@ options:
         description: Host id.
         required: false
         type: int
-    host_name:
+    name:
         description: Host name.
         required: false
         type: str
-    new_host_name:
+    new_name:
         description: New host name for update operation.
         required: false
         type: str
@@ -82,6 +82,7 @@ EXAMPLES = r'''
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
 from ansible_collections.parnoud.centreon.plugins.module_utils.host import delete_host_configuration, partially_update_host_configuration, find_all_host_configuration, create_host_configuration
+import json
 
 
 def main():
@@ -133,11 +134,11 @@ def main():
             'type': 'int',
             'required': False,
         },
-        'host_name': {
+        'name': {
             'type': 'str',
             'required': False,
         },
-        'new_host_name': {
+        'new_name': {
             'type': 'str',
             'required': False,
         },
@@ -167,7 +168,7 @@ def main():
     if module.params['state'] == 'present':
         host_data={
             'monitoring_server_id': module.params['monitoring_server_id'],
-            'name': module.params['host_name'],
+            'name': module.params['name'],
             'address': module.params['address'],
         }
         result = create_host_configuration(api, host_data=host_data)
@@ -180,12 +181,12 @@ def main():
 
         host_id = None
 
-        if module.params['host_name']:
+        if module.params['name']:
             filter_criteria = {}
-            filter_criteria['search'] = {'name': module.params['host_name']}
+            filter_criteria['search'] = json.dumps({'name': module.params['name']})
             hosts = find_all_host_configuration(api, query_parameters=filter_criteria)
             if len(hosts) != 1:
-                module.fail_json(msg=f"Host {module.params['host_name']} multiple or not found for update.")
+                module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update.")
             host_id = hosts[0]['id']
         elif module.params['host_id']:
             host_id = module.params['host_id']
@@ -196,12 +197,13 @@ def main():
     elif module.params['state'] == 'absent':
         host_id = None
 
-        if module.params['host_name']:
-            host_filter_criteria = {}
-            host_filter_criteria['search'] = { 'name': module.params['host_name'] }
-            hosts = find_all_host_configuration(api, query_parameters=host_filter_criteria)
+        if module.params['name']:
+            filter_criteria = {}
+            filter_criteria['search'] = json.dumps({'name': module.params['name']})
+
+            hosts = find_all_host_configuration(api, query_parameters=filter_criteria)
             if len(hosts) != 1:
-                module.fail_json(msg=f"Host {module.params['host_name']} multiple or not found for update. {len(hosts)}")
+                module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update. {len(hosts)}")
             host_id = hosts[0]['id']
         elif module.params['host_id']:
             host_id = module.params['host_id']
