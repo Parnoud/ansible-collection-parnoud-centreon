@@ -642,7 +642,7 @@ def main():
                 module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update. {filter_criteria}")
             host_id = hosts[0]['id']
             current_host_data = hosts[0]
-        
+
         current_host_data.pop('id',None)
         current_host_data.pop('monitoring_server',None)
 
@@ -660,15 +660,7 @@ def main():
 
         current_host_data["templates"] = [item["id"] for item in current_host_data["templates"]]
         if host_data.get('templates'):
-            current_host_data["templates"] += [item for item in host_data['templates']]
-
-        current_host_data["templates"] = [item["id"] for item in current_host_data["templates"]]
-        if host_data.get('templates'):
-            current_host_data["templates"] += [item for item in host_data['templates']]
-
-        
-
-        #module.fail_json(msg=f"{current_host_data}")
+            current_host_data["templates"] += [item for item in host_data['templates']]        
 
         if host_id:
             if partially_update_host_configuration(api, host_id, current_host_data):
@@ -685,9 +677,12 @@ def main():
             filter_criteria = {}
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
 
-            hosts = find_all_host_configuration(api, query_parameters=filter_criteria)
-            if len(hosts) != 1:
-                module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update. {len(hosts)}")
+            hosts = find_all_host_configuration(api, params=filter_criteria)
+            if len(hosts) == 0:
+                module.exit_json(skipped=True,result={"host_id": host_id, "status": "ignored"})
+            elif len(hosts) >= 2:
+                module.fail_json(msg=f"Host {module.params['name']} multiple found for update. {len(hosts)}")
+
             host_id = hosts[0]['id']
 
 
