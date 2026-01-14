@@ -131,15 +131,24 @@ class InventoryModule(BaseInventoryPlugin):
             self.inventory.add_host(host['name'])
 
             for group in host['groups']:
+                self.inventory.add_group('groups')
                 self.inventory.add_group(group['name'])
+                self.inventory.add_child('groups', group['name'])
+                self.inventory.add_child(group['name'], host['name'])
 
             if 'templates' in attributes or len(attributes) == 0:
                 for template in host['templates']:
+                    self.inventory.add_group('templates')
                     self.inventory.add_group(template['name'])
+                    self.inventory.add_child('templates', template['name'])
+                    self.inventory.add_child(template['name'], host['name'])
 
             if 'categories' in attributes or len(attributes) == 0:
                 for categorie in host['categories']:
+                    self.inventory.add_group('categories')
                     self.inventory.add_group(categorie['name'])
+                    self.inventory.add_child('categories', categorie['name'])
+                    self.inventory.add_child(categorie['name'], host['name'])
 
             self.inventory.set_variable(host['name'], "id", host['id'])
             self.inventory.set_variable(host['name'], "alias", host['alias'])
