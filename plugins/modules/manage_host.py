@@ -254,8 +254,9 @@ EXAMPLES = r'''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
-from ansible_collections.parnoud.centreon.plugins.module_utils.host import delete_host_configuration, partially_update_host_configuration, find_all_host_configuration, create_host_configuration
+from ansible_collections.parnoud.centreon.plugins.module_utils.host import delete_host_configuration, partially_update_host_configuration, find_all_host_configuration, create_host_configuration, get_host
 from ansible_collections.parnoud.centreon.plugins.module_utils.host_group import list_all_host_groups_configuration
+from ansible_collections.parnoud.centreon.plugins.module_utils.host_template import find_all_host_template_configuration
 import json
 
 
@@ -266,7 +267,7 @@ def main():
         'state': {
             'type': 'str',
             'default': 'create',
-            'choices': ['create', 'delete', 'update'],
+            'choices': ['create', 'delete', 'update', 'replace'],
         },
         'hostname': {
             'type': 'str',
@@ -484,7 +485,7 @@ def main():
             'required': False,
         },
         'templates': {
-            'type': 'dict',
+            'type': 'list',
             'required': False,
         },
         'macros': {
@@ -565,23 +566,39 @@ def main():
             if isinstance(val, str):
                 filter_criteria = {}
                 filter_criteria['search'] = json.dumps({'name': val})
-                hosts = list_all_host_groups_configuration(api, params=filter_criteria)
-                if len(hosts) != 1:
-                    module.fail_json(msg=f"Host group {module.params['name']} multiple or not found for update.")
-                host_group_id = hosts[0]['id']
+                host_groups = list_all_host_groups_configuration(api, params=filter_criteria)
+                if len(host_groups) != 1:
+                    module.fail_json(msg=f"Host group {val} multiple or not found for update.")
+                host_group_id = host_groups[0]['id']
                 new_groups.append(host_group_id)
             else:
                 new_groups.append(val)
         host_data['groups'] = new_groups
+
+    if host_data.get('templates'):
+        new_templates = []
+        for val in host_data['templates']:
+            if isinstance(val, str):
+                filter_criteria = {}
+                filter_criteria['search'] = json.dumps({'name': val})
+                hosts_templates = find_all_host_template_configuration(api, params=filter_criteria)
+                if len(hosts_templates) != 1:
+                    module.fail_json(msg=f"Host template {val} multiple or not found for update.")
+                host_template_id = hosts_templates[0]['id']
+                new_templates.append(host_template_id)
+            else:
+                new_templates.append(val)
+        host_data['templates'] = new_templates
 
     if module.params['state'] == 'create':
 
         result = create_host_configuration(api, host_data=host_data)
         module.exit_json(Created=True, result=result['id'])
         
-    elif module.params['state'] == 'update':
+    elif module.params['state'] == 'replace':
 
         host_id = None
+
         if module.params['new_name']:
             host_data['name'] = module.params['new_name']
         else:
@@ -589,6 +606,7 @@ def main():
         
         if module.params['host_id']:
             host_id = module.params['host_id']
+
         elif module.params['name']:
             filter_criteria = {}
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
@@ -596,10 +614,58 @@ def main():
             if len(hosts) != 1:
                 module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update. {filter_criteria}")
             host_id = hosts[0]['id']
-        
 
         if host_id:
             if partially_update_host_configuration(api, host_id, host_data):
+                module.exit_json(changed=True, result={"host_id": host_id, "status": "updated"})
+        else:
+            module.fail_json(msg="Host ID or name must be provided for update operation.")
+
+    elif module.params['state'] == 'update':
+
+        host_id = None
+        current_host_data = None
+
+        if module.params['new_name']:
+            host_data['name'] = module.params['new_name']
+        else:
+            host_data.pop('name', None)
+        
+        if module.params['host_id']:
+            host_id = module.params['host_id']
+
+        elif module.params['name']:
+            filter_criteria = {}
+            filter_criteria['search'] = json.dumps({'name': module.params['name']})
+            hosts = find_all_host_configuration(api, params=filter_criteria)
+            if len(hosts) != 1:
+                module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update. {filter_criteria}")
+            host_id = hosts[0]['id']
+            current_host_data = hosts[0]
+        
+        current_host_data.pop('id',None)
+        current_host_data.pop('monitoring_server',None)
+
+        current_host_data.pop('notification_timeperiod',None)
+        current_host_data.pop('check_timeperiod',None)
+        current_host_data.pop('severity',None)
+
+        current_host_data["templates"] = [item["id"] for item in current_host_data["templates"]]
+        if host_data.get('templates'):
+            current_host_data["templates"] += [item for item in host_data['templates']]
+
+        current_host_data["categories"] = [item["id"] for item in current_host_data["categories"]]
+        if host_data.get('categories'):
+            current_host_data["categories"] += [item for item in host_data["categories"]]
+
+        current_host_data["groups"] = [item["id"] for item in current_host_data["groups"]]
+        if host_data.get('groups'):
+            current_host_data["groups"] += [item for item in host_data['groups']]
+
+        #module.fail_json(msg=f"{current_host_data}")
+
+        if host_id:
+            if partially_update_host_configuration(api, host_id, current_host_data):
                 module.exit_json(changed=True, result={"host_id": host_id, "status": "updated"})
         else:
             module.fail_json(msg="Host ID or name must be provided for update operation.")

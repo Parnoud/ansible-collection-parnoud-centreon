@@ -30,8 +30,7 @@ def partially_update_host_configuration(CentreonAPI_obj, host_id, host_data):
     if code == 204:
         return True
     elif code == 400:
-        raise Exception(f"Indicates that the server cannot or will not process the \
-                        request due to something that is perceived to be a client error: {json.loads(data)['message']}")
+        raise Exception(f"Indicates that the server cannot or will not process the request due to something that is perceived to be a client error: \n{json.loads(data)['message']}")
     elif code == 403:
         raise Exception(f"Forbidden: {json.loads(data)['message']}")
     elif code == 404:
