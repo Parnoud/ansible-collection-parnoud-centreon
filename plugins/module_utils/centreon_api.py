@@ -37,7 +37,7 @@ class CentreonAPI:
         self.session_token = None
         self._authenticate()
 
-    def _request(self, method, endpoint, data=None, params=None):
+    def _request(self, method: str, endpoint: str, data: dict=None, params:dict=None)->tuple[int, bytes]:
         """Request to centreon API v2 endpoint with given method, data and query parameters."""
         url = f"{self.base_url}/{endpoint}"
 
@@ -79,7 +79,7 @@ class CentreonAPI:
             except Exception as e:
                 raise Exception(f"Failed to authenticate: {str(e)}")
 
-    def _get_all_paginated(self, method, endpoint, params=None):
+    def _get_all_paginated(self, method: str, endpoint: str, params: dict=None)-> dict:
         """Return all data from a paginated endpoint."""
         all_results = []
         page = 1
