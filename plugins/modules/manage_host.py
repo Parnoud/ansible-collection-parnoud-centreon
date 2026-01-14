@@ -650,10 +650,6 @@ def main():
         current_host_data.pop('check_timeperiod',None)
         current_host_data.pop('severity',None)
 
-        current_host_data["templates"] = [item["id"] for item in current_host_data["templates"]]
-        if host_data.get('templates'):
-            current_host_data["templates"] += [item for item in host_data['templates']]
-
         current_host_data["categories"] = [item["id"] for item in current_host_data["categories"]]
         if host_data.get('categories'):
             current_host_data["categories"] += [item for item in host_data["categories"]]
@@ -661,6 +657,16 @@ def main():
         current_host_data["groups"] = [item["id"] for item in current_host_data["groups"]]
         if host_data.get('groups'):
             current_host_data["groups"] += [item for item in host_data['groups']]
+
+        current_host_data["templates"] = [item["id"] for item in current_host_data["templates"]]
+        if host_data.get('templates'):
+            current_host_data["templates"] += [item for item in host_data['templates']]
+
+        current_host_data["templates"] = [item["id"] for item in current_host_data["templates"]]
+        if host_data.get('templates'):
+            current_host_data["templates"] += [item for item in host_data['templates']]
+
+        
 
         #module.fail_json(msg=f"{current_host_data}")
 
