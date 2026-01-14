@@ -26,7 +26,7 @@ def delete_host_configuration(CentreonAPI_obj, host_id: int):
 
 def partially_update_host_configuration(CentreonAPI_obj, host_id, host_data):
     """Partially update a host configuration"""
-    code, data = CentreonAPI_obj._request('PATCH', f'configuration/hosts/{host_id}', host_data)
+    code, data = CentreonAPI_obj._request('PATCH', f'configuration/hosts/{host_id}', data=host_data)
     if code == 204:
         return True
     elif code == 400:
@@ -42,9 +42,9 @@ def partially_update_host_configuration(CentreonAPI_obj, host_id, host_data):
         raise Exception(f"Failed to partially update host: {json.loads(data)['message']}")
 
 
-def find_all_host_configuration(CentreonAPI_obj, query_parameters=None):
+def find_all_host_configuration(CentreonAPI_obj, params=None):
     """Return host configurations filtered by query parameters."""
-    return CentreonAPI_obj._get_all_paginated('GET', 'configuration/hosts', params=query_parameters)
+    return CentreonAPI_obj._get_all_paginated('GET', 'configuration/hosts', params=params)
 
 
 def create_host_configuration(CentreonAPI_obj, host_data):
@@ -78,9 +78,9 @@ def get_host(CentreonAPI_obj, host_id: int):
         raise Exception(f"Failed: {json.loads(data)['message']}")
 
 
-def count_hosts_by_status(CentreonAPI_obj, query_parameters=None):
+def count_hosts_by_status(CentreonAPI_obj, params=None):
     """Count hosts by their status (UP/DOWN/UNREACHABLE/PENDING)."""
-    code, data = CentreonAPI_obj._request('GET', 'monitoring/hosts/count', params=query_parameters)
+    code, data = CentreonAPI_obj._request('GET', 'monitoring/hosts/count', params=params)
     if code == 200:
         response = json.loads(data)
         return response.get('count', 0)

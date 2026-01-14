@@ -8,10 +8,8 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 #
 
-from ansible.module_utils.urls import open_url, ConnectionError, SSLValidationError
-from ansible.module_utils.six.moves.urllib.error import HTTPError, URLError
-from ansible.module_utils.six.moves.urllib.parse import urlencode
 import json
+import requests
 
 
 class CentreonAPI:
@@ -39,27 +37,12 @@ class CentreonAPI:
         self.session_token = None
         self._authenticate()
 
-    def _request(self, method, endpoint, data=None, query_parameters=None):
+    def _request(self, method, endpoint, data=None, params=None):
         """Request to centreon API v2 endpoint with given method, data and query parameters."""
         url = f"{self.base_url}/{endpoint}"
-        if query_parameters:
-            query_string = urlencode(query_parameters)
-            url = f"{url}?{query_string}"
 
-        try:
-            response = open_url(
-                url=url,
-                headers=self.headers,
-                method=method,
-                data=json.dumps(data) if data else None,
-                validate_certs=self.validate_certs,
-                timeout=self.timeout
-            )
-            return response.getcode(), response.read()
-        except HTTPError as e:
-            return e.code, e.read()
-        except (URLError, ConnectionError, SSLValidationError) as e:
-            return 0, str(e)
+        response = requests.request(method=method, url=url, headers=self.headers, json=data, params=params, verify=self.validate_certs, timeout=self.timeout)
+        return response.status_code, response.content
 
     def _authenticate(self):
         """Authenticate on centreon APIv2 with username/password or token."""
@@ -119,7 +102,7 @@ class CentreonAPI:
             code, data = self._request(
                 method=method,
                 endpoint=endpoint,
-                query_parameters=query_parameters
+                params=query_parameters
             )
 
             if code == 403:

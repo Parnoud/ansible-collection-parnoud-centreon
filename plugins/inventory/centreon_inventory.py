@@ -105,7 +105,7 @@ class InventoryModule(BaseInventoryPlugin):
                               validate_certs=validate_certs,
                               timeout=timeout)
 
-            return find_all_host_configuration(api, query_parameters=filter_criteria)
+            return find_all_host_configuration(api, params=filter_criteria)
         except Exception as e:
             raise AnsibleError(f"Error fetching hosts from Centreon API: {str(e)}")
 
@@ -124,30 +124,28 @@ class InventoryModule(BaseInventoryPlugin):
     def _populate(self, data):
 
         attributes = self.get_option('attributes') or []
+        print(attributes)
         for host in data:
             self.inventory.add_host(host['name'])
+
+            self.inventory.add_group(group['monitoring_server'])
+
+            for group in host['groups']:
+                self.inventory.add_group(group['name'])
 
             if 'templates' in attributes:
                 for template in host['templates']:
                     self.inventory.add_group(template['name'])
-                    self.inventory.add_child(template['name'], host['name'])
 
             if 'categories' in attributes:
                 for categorie in host['categories']:
                     self.inventory.add_group(categorie['name'])
-                    self.inventory.add_child(categorie['name'], host['name'])
-
-            if 'groups' in attributes:
-                for group in host['groups']:
-                    self.inventory.add_group(group['name'])
-                    self.inventory.add_child(group['name'], host['name'])
 
             self.inventory.set_variable(host['name'], "id", host['id'])
             self.inventory.set_variable(host['name'], "alias", host['alias'])
             self.inventory.set_variable(host['name'], "address", host['address'])
-
-            if 'monitoring_server' in attributes:
-                self.inventory.set_variable(host['name'], "templates", host['monitoring_server'])
+            self.inventory.set_variable(host['name'], "monitoring_server", host['monitoring_server'])
+            
             if 'templates' in attributes:
                 self.inventory.set_variable(host['name'], "list_templates", host['templates'])
             if 'normal_check_interval' in attributes:
@@ -160,7 +158,6 @@ class InventoryModule(BaseInventoryPlugin):
                 self.inventory.set_variable(host['name'], "severity", host['severity'])
             if 'categories' in attributes:
                 self.inventory.set_variable(host['name'], "list_categories", host['categories'])
-            if 'groups' in attributes:
-                self.inventory.set_variable(host['name'], "list_groups", host['groups'])
+            self.inventory.set_variable(host['name'], "list_groups", host['groups'])
             if 'is_activated' in attributes:
                 self.inventory.set_variable(host['name'], "is_activated", host['is_activated'])
