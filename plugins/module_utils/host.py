@@ -9,11 +9,14 @@
 #
 
 import json
+from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
+
+### CONFIGURATION ###
 
 
-def delete_host_configuration(CentreonAPI_obj, host_id: int):
-    """Delete host configuration by ID."""
-    code, data = CentreonAPI_obj._request('DELETE', f'configuration/hosts/{host_id}')
+def delete_host_configuration(api: CentreonAPI, host_id: int)-> bool:
+    """Delete a host configuration."""
+    code, data = api._request('DELETE', f'configuration/hosts/{host_id}')
     if code == 204:
         return True
     elif code == 403:
@@ -24,9 +27,9 @@ def delete_host_configuration(CentreonAPI_obj, host_id: int):
         raise Exception(f"Failed to delete host: {json.loads(data)['message']}")
 
 
-def partially_update_host_configuration(CentreonAPI_obj, host_id, host_data):
-    """Partially update a host configuration"""
-    code, data = CentreonAPI_obj._request('PATCH', f'configuration/hosts/{host_id}', data=host_data)
+def partially_update_host_configuration(api: CentreonAPI, host_id: int, host_data: dict)-> bool:
+    """Partially update a host configuration."""
+    code, data = api._request('PATCH', f'configuration/hosts/{host_id}', data=host_data)
     if code == 204:
         return True
     elif code == 400:
@@ -41,14 +44,14 @@ def partially_update_host_configuration(CentreonAPI_obj, host_id, host_data):
         raise Exception(f"Failed to partially update host: {json.loads(data)['message']}")
 
 
-def find_all_host_configuration(CentreonAPI_obj, params=None):
-    """Return host configurations filtered by query parameters."""
-    return CentreonAPI_obj._get_all_paginated('GET', 'configuration/hosts', params=params)
+def find_all_host_configuration(api: CentreonAPI, params: dict=None):
+    """Return all host configurations."""
+    return api._get_all_paginated('GET', 'configuration/hosts', params=params)
 
 
-def create_host_configuration(CentreonAPI_obj, host_data):
-    """Create a host configuration"""
-    code, data = CentreonAPI_obj._request('POST', 'configuration/hosts', host_data)
+def create_host_configuration(api: CentreonAPI, host_data: dict):
+    """Create a host configuration."""
+    code, data = api._request('POST', 'configuration/hosts', host_data)
     if code == 201:
         return json.loads(data)
     elif code == 400:
@@ -64,9 +67,23 @@ def create_host_configuration(CentreonAPI_obj, host_data):
         raise Exception(f"Failed: {json.loads(data)['message']}")
 
 
-def get_host(CentreonAPI_obj, host_id: int):
+### MONITORINNG
+
+
+def list_all_host(api: CentreonAPI, params:dict=None):
+    """List all the hosts in real-time monitoring."""
+    code, data = api._request('GET', 'monitoring/hosts', params=params)
+    if code == 200:
+        return json.loads(data)
+    elif code == 403:
+        raise Exception(f"Forbidden: {json.loads(data)['message']}")
+    else:
+        raise Exception(f"Failed: {json.loads(data)['message']}")
+
+
+def get_host(api: CentreonAPI, host_id: int):
     """Get host configuration by ID."""
-    code, data = CentreonAPI_obj._request('GET', f'configuration/hosts/{host_id}')
+    code, data = api._request('GET', f'configuration/hosts/{host_id}')
     if code == 200:
         return json.loads(data)
     elif code == 403:
@@ -77,9 +94,9 @@ def get_host(CentreonAPI_obj, host_id: int):
         raise Exception(f"Failed: {json.loads(data)['message']}")
 
 
-def count_hosts_by_status(CentreonAPI_obj, params=None):
+def count_hosts_by_status(api: CentreonAPI, params: dict=None):
     """Count hosts by their status (UP/DOWN/UNREACHABLE/PENDING)."""
-    code, data = CentreonAPI_obj._request('GET', 'monitoring/hosts/count', params=params)
+    code, data = api._request('GET', 'monitoring/hosts/count', params=params)
     if code == 200:
         response = json.loads(data)
         return response.get('count', 0)
