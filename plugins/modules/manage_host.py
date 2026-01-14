@@ -255,6 +255,7 @@ EXAMPLES = r'''
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
 from ansible_collections.parnoud.centreon.plugins.module_utils.host import delete_host_configuration, partially_update_host_configuration, find_all_host_configuration, create_host_configuration
+from ansible_collections.parnoud.centreon.plugins.module_utils.host_group import list_all_host_groups_configuration
 import json
 
 
@@ -479,7 +480,7 @@ def main():
             'required': False,
         },
         'groups': {
-            'type': 'dict',
+            'type': 'list',
             'required': False,
         },
         'templates': {
@@ -558,6 +559,21 @@ def main():
 
     host_data = {k: v for k, v in host_data.items() if v is not None}
 
+    if host_data.get('groups'):
+        new_groups = []
+        for val in host_data['groups']:
+            if isinstance(val, str):
+                filter_criteria = {}
+                filter_criteria['search'] = json.dumps({'name': val})
+                hosts = list_all_host_groups_configuration(api, params=filter_criteria)
+                if len(hosts) != 1:
+                    module.fail_json(msg=f"Host group {module.params['name']} multiple or not found for update.")
+                host_group_id = hosts[0]['id']
+                new_groups.append(host_group_id)
+            else:
+                new_groups.append(val)
+        host_data['groups'] = new_groups
+
     if module.params['state'] == 'create':
 
         result = create_host_configuration(api, host_data=host_data)
@@ -576,9 +592,9 @@ def main():
         elif module.params['name']:
             filter_criteria = {}
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
-            hosts = find_all_host_configuration(api, query_parameters=filter_criteria)
+            hosts = find_all_host_configuration(api, params=filter_criteria)
             if len(hosts) != 1:
-                module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update.")
+                module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update. {filter_criteria}")
             host_id = hosts[0]['id']
         
 

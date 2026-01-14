@@ -105,7 +105,11 @@ class InventoryModule(BaseInventoryPlugin):
                               validate_certs=validate_certs,
                               timeout=timeout)
 
-            return find_all_host_configuration(api, params=filter_criteria)
+            result = find_all_host_configuration(api, params=filter_criteria)
+            if len(result) >= 1:
+                return result
+            else:
+                 raise AnsibleError(f"No result found with search value: {filter_criteria}")
         except Exception as e:
             raise AnsibleError(f"Error fetching hosts from Centreon API: {str(e)}")
 
@@ -122,22 +126,18 @@ class InventoryModule(BaseInventoryPlugin):
         self._populate(data)
 
     def _populate(self, data):
-
         attributes = self.get_option('attributes') or []
-        print(attributes)
         for host in data:
             self.inventory.add_host(host['name'])
-
-            self.inventory.add_group(group['monitoring_server'])
 
             for group in host['groups']:
                 self.inventory.add_group(group['name'])
 
-            if 'templates' in attributes:
+            if 'templates' in attributes or len(attributes) == 0:
                 for template in host['templates']:
                     self.inventory.add_group(template['name'])
 
-            if 'categories' in attributes:
+            if 'categories' in attributes or len(attributes) == 0:
                 for categorie in host['categories']:
                     self.inventory.add_group(categorie['name'])
 
@@ -146,18 +146,18 @@ class InventoryModule(BaseInventoryPlugin):
             self.inventory.set_variable(host['name'], "address", host['address'])
             self.inventory.set_variable(host['name'], "monitoring_server", host['monitoring_server'])
             
-            if 'templates' in attributes:
+            if 'templates' in attributes or len(attributes) == 0:
                 self.inventory.set_variable(host['name'], "list_templates", host['templates'])
-            if 'normal_check_interval' in attributes:
+            if 'normal_check_interval' in attributes or len(attributes) == 0:
                 self.inventory.set_variable(host['name'], "normal_check_interval", host['normal_check_interval'])
-            if 'retry_check_interval' in attributes:
+            if 'retry_check_interval' in attributes or len(attributes) == 0:
                 self.inventory.set_variable(host['name'], "retry_check_interval", host['retry_check_interval'])
-            if 'check_timeperiod' in attributes:
+            if 'check_timeperiod' in attributes or len(attributes) == 0:
                 self.inventory.set_variable(host['name'], "check_timeperiod", host['check_timeperiod'])
-            if 'severity' in attributes:
+            if 'severity' in attributes or len(attributes) == 0:
                 self.inventory.set_variable(host['name'], "severity", host['severity'])
-            if 'categories' in attributes:
+            if 'categories' in attributes or len(attributes) == 0:
                 self.inventory.set_variable(host['name'], "list_categories", host['categories'])
             self.inventory.set_variable(host['name'], "list_groups", host['groups'])
-            if 'is_activated' in attributes:
+            if 'is_activated' in attributes or len(attributes) == 0:
                 self.inventory.set_variable(host['name'], "is_activated", host['is_activated'])

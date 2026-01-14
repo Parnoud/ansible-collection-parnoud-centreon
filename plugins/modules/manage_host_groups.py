@@ -232,7 +232,7 @@ def main():
         elif module.params['name']:
             filter_criteria = {}
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
-            hosts = list_all_host_groups(api, query_parameters=filter_criteria)
+            hosts = list_all_host_groups(api, params=filter_criteria)
             if len(hosts) != 1:
                 module.fail_json(msg=f"Host group {module.params['name']} multiple or not found for update.")
             host_group_id = hosts[0]['id']
