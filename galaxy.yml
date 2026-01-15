@@ -21,3 +21,7 @@ issues: https://github.com/Parnoud/ansible-collection-parnoud-centreon/issues
 build_ignore:
   - .gitignore
   - changelogs/.plugin-cache.yaml
+  - .venv
+  - test
+  - .devcontainer
+  - .vscode
