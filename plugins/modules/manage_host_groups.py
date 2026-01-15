@@ -11,191 +11,87 @@
 
 DOCUMENTATION = r'''
 ---
-module: manage_host
+module: manage_host_groups
 short_description: Create a host in Centreon via API v2
 description:
     - Create a host group in Centreon.
     - Update a host group in Centreon.
     - Delete a host group in Centreon.
 author: "Pierre ARNOUD (@parnoud)"
-state:
+options:
+    state:
         description: Desired state of the host.
-        choices: ['present', 'absent', 'update', 'duplicate']
-        default: 'present'
+        choices: ['create', 'delete', 'update', 'duplicate']
+        default: 'create'
         type: str
-    hostname:
-        description: URL to Centreon API v2.
-        required: false
-        type: str
-    port:
-        description: Port to Centreon API v2.
-        required: false
-        type: int
-    token:
-        description: Centreon API token.
-        required: false
-        type: str
-    username:
-        description: Centreon username.
-        required: false
-        type: str
-    password:
-        description: Centreon password.
-        required: false
-        type: str
-    validate_certs:
-        description: Whether to validate SSL certificates.
-        type: bool
-        default: false
-        required: false
-    timeout:
-        description: Timeout for API requests.
-        type: int
-        default: 30
-        required: false
+        required: False
     name:
         description: Name of the host group.
-        required: false
+        required: False
         type: str
     new_name:
         description: New name of the host (for update state).
-        required: false
+        required: False
         type: str
     alias:
         description: Alias of the host.
-        required: false
+        required: False
         type: str
     icon_id:
         description: Icon ID of the host.
-        required: false
+        required: False
         type: int
     geo_coords:
         description: Geographical coordinates of the host.
-        required: false
+        required: False
         type: str
     comment:
         description: Comment for the host.
-        required: false
+        required: False
         type: str
     hosts:
         description: Dictionary of hosts to be associated with the host group.
-        required: false
+        required: False
         type: list
+        elements: int
         default: []
     ids:
         description: Dictionary of hosts ids to duplicate.
-        required: false
+        required: False
         type: list
+        elements: int
     nb_duplicates:
         description: Number of duplicates to create.
-        required: false
+        required: False
         type: int
+extends_documentation_fragment:
+    - parnoud.centreon.base_options
 '''
 
 EXAMPLES = r'''
 
 '''
 
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
-from ansible_collections.parnoud.centreon.plugins.module_utils.host_group import delete_host_group, update_host_group, list_all_host_groups, add_host_group, duplicate_multiple_host_groups
 import json
 
-def main():
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
+from ansible_collections.parnoud.centreon.plugins.module_utils.host_group import (
+    delete_host_group,
+    update_host_group,
+    list_all_host_groups,
+    add_host_group,
+    duplicate_multiple_host_groups,
+    get_host_groups
+)
+from ansible_collections.parnoud.centreon.plugins.module_utils.argument_spec import base_argument_spec
+
+
+def manage_host_groups(module):
     """entry point for module execution"""
-
-    spec = {
-        'state': {
-            'type': 'str',
-            'default': 'create',
-            'choices': ['create', 'delete', 'update', 'duplicate'],
-        },
-        'hostname': {
-            'type': 'str',
-            'required': False,
-        },
-        'port': {
-            'type': 'int',
-            'required': False,
-        },
-        'token': {
-            'type': 'str',
-            'required': False,
-            'no_log': True,
-        },
-        'username': {
-            'type': 'str',
-            'required': False,
-        },
-        'password': {
-            'type': 'str',
-            'required': False,
-            'no_log': True,
-        },
-        'validate_certs': {
-            'type': 'bool',
-            'default': False,
-            'required': False,
-        },
-        'timeout': {
-            'type': 'int',
-            'default': 30,
-            'required': False,
-        },
-        'name': {
-            'type': 'str',
-            'required': False,
-        },
-        'new_name': {
-            'type': 'str',
-            'required': False,
-        },
-        'alias': {
-            'type': 'str',
-            'required': False,
-            'default': None,
-        },
-        'icon_id': {
-            'type': 'int',
-            'required': False,
-            'default': None,
-        },
-        'geo_coords': {
-            'type': 'str',
-            'required': False,
-            'default': None,
-        },
-        'comment': {
-            'type': 'str',
-            'required': False,
-            'default': None,
-        },
-        'hosts': {
-            'type': 'list',
-            'required': False,
-            'default': [],
-        },
-        'ids': {
-            'type': 'list',
-            'required': False,
-        },
-        'nb_duplicates' : {
-            'type': 'int',
-            'required': False,
-        },
-
-    }
-
-    module = AnsibleModule(
-        argument_spec=spec,
-        supports_check_mode=True,
-        required_one_of=[['token', 'username', 'password', 'name', 'host_id']],
-        mutually_exclusive=[['token', 'username'], ['token', 'password'], ['name', 'host_id']],
-    )
 
     api = CentreonAPI(
         hostname=module.params.get('hostname'),
-        port=module.params.get('port'),
         token=module.params.get('token'),
         username=module.params.get('username'),
         password=module.params.get('password'),
@@ -217,7 +113,7 @@ def main():
     if module.params['state'] == 'create':
 
         result = add_host_group(api, host_group_data=host_group_data)
-        module.exit_json(Created=True, result=result['name'])
+        return True, result
 
     elif module.params['state'] == 'update':
 
@@ -226,7 +122,7 @@ def main():
             host_group_data['name'] = module.params['new_name']
         else:
             host_group_data.pop('name', None)
-        
+
         if module.params['host_id']:
             host_group_id = module.params['host_id']
         elif module.params['name']:
@@ -234,38 +130,67 @@ def main():
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
             hosts = list_all_host_groups(api, params=filter_criteria)
             if len(hosts) != 1:
-                module.fail_json(msg=f"Host group {module.params['name']} multiple or not found for update.")
+                return False, f"Host group {module.params['name']} multiple or not found for update."
             host_group_id = hosts[0]['id']
-        
 
         if host_group_id:
             if update_host_group(api, host_group_id, host_group_data):
-                module.exit_json(changed=True, result={"host_id": host_group_id, "status": "updated"})
+                return True, get_host_groups(api, host_group_id)
         else:
-            module.fail_json(msg="Host ID or name must be provided for update operation.")
-    
+            return False, "Host ID or name must be provided for update operation."
+
     elif module.params['state'] == 'delete':
 
         host_group_id = None
-        
+
         if module.params['host_id']:
             host_group_id = module.params['host_id']
         elif module.params['name']:
             filter_criteria = {}
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
-            hosts = list_all_host_groups(api, query_parameters=filter_criteria)
-            if len(hosts) != 1:
-                module.fail_json(msg=f"Host group {module.params['name']} multiple or not found for update.")
-            host_group_id = hosts[0]['id']
-        
+            host_groups = list_all_host_groups(api, query_parameters=filter_criteria)
+            
+            if len(host_groups) == 0:
+                return True, host_groups
+            elif len(host_groups) >= 2:
+                return False, f"Host {module.params['name']} multiple for update. {len(host_groups)}"
+            host_group_id = host_groups[0]['id']
 
         if host_group_id:
             if delete_host_group(api, host_group_id):
-                module.exit_json(changed=True, result={"host_id": host_group_id, "status": "updated"})
+                return True, host_groups[0]
         else:
-            module.fail_json(msg="Host ID or name must be provided for update operation.")
+            return False, "Host ID or name must be provided for update operation."
 
     elif module.params['state'] == 'duplicate':
-        result=duplicate_multiple_host_groups(api, module.params.get('ids'), module.params.get('nb_duplicates'))
+        result = duplicate_multiple_host_groups(api, module.params.get('ids'), module.params.get('nb_duplicates'))
+        return True, result
+
+
+def main():
+    argument_spec = base_argument_spec()
+    argument_spec.update(
+        state=dict(type='str', choices=['create', 'delete', 'update', 'duplicate'], default='create'),
+        name=dict(type='str'),
+        new_name=dict(type='str'),
+        alias=dict(type='str'),
+        icon_id=dict(type='int', default=None),
+        geo_coords=dict(type='str', default=None),
+        comment=dict(type='str', default=None),
+        hosts=dict(type='list', elements='int', default=[]),
+        ids=dict(type='list', elements='int'),
+        nb_duplicates=dict(type='int')
+    )
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True
+    )
+    return_type, data = manage_host_groups(module)
+    if return_type:
+        module.exit_json(changed=False, data=data)
+    else:
+        module.fail_json(msg=data)
+
+
 if __name__ == '__main__':
     main()

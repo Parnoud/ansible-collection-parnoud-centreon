@@ -10,64 +10,102 @@
 
 
 DOCUMENTATION = r'''
-    name: centreon_inventory
-    short_description: Centreon dynamic inventory source
+    name: centreon_inventory_host
+    short_description: Centreon host inventory source
+    author:
+        - ARNOUD Pierre (@parnoud)
     description:
-        - Fetches hosts from Centreon API v2.
+        - Get Centreon host as inventory hosts
+        - Uses any file which ends with centreon.yml or centreon.yaml as YAML configuration file.
     options:
         hostname:
             description: URL to Centreon API v2.
-            required: false
+            required: true
             env:
-              - name: CENTREON_HOSTNAME
-        port:
-            description: URL to Centreon API v2.
-            required: false
-            env:
-              - name: CENTREON_PORT
-        path:
-            description: URL to Centreon API v2.
-            required: false
-            env:
-              - name: CENTREON_PATH
+                - name: CENTREON_HOSTNAME
         username:
             description: Username to Centreon API v2
             required: false
             env:
-              - name: CENTREON_USERNAME
+                - name: CENTREON_USERNAME
         password:
             description: Password to Centreon API v2
             required: false
             env:
-              - name: CENTREON_PASSWORD
+                - name: CENTREON_PASSWORD
         token:
             description: Token to Centreon API v2
             required: false
             env:
-              - name: CENTREON_TOKEN
+                - name: CENTREON_TOKEN
         validate_certs:
             description: Whether to validate SSL certificates.
             type: bool
-            default: true
+            default: false
             env:
-              - name: CENTREON_VALIDATE_CERTS
+                - name: CENTREON_VALIDATE_CERTS
         timeout:
             description: Timeout for API requests.
             type: int
             default: 30
             env:
-              - name: CENTREON_TIMEOUT
+                - name: CENTREON_TIMEOUT
         search:
-            description: search criteria for fetching hosts.
-            type: list or dict
+            description: search criteria for fetching hosts (list or dict).
             required: false
         attributes:
-            description: attributes to include in the inventory.
+            description:
+                - attributes to include in the inventory.
+                - default add all attributes and groups by templates, groups and categories
+                - templates (cetreon host templates) listed as list_templates
+                - groups (cetreon host groups) listed as list_groups
+                - categories (centreon host categories) listed as list_categories
             type: list
             required: false
+            elements: str
+            default:
+                - monitoring_server
+                - templates
+                - normal_check_interval
+                - retry_check_interval
+                - check_timeperiod
+                - severity
+                - categories
+                - groups
+                - is_activated
 '''
+
+EXAMPLES = r"""
+# Sample configuration file for Centreon Host dynamic inventory
+    plugin: parnoud.centreon.centreon_inventory_host
+    hostname: http://centreon.local/centreon/api/latest
+    username: username
+    password: password
+
+# Sample configuration file for Centreon Host dynamic inventory with select attributes
+    plugin: parnoud.centreon.centreon_inventory_host
+    hostname: http://centreon.local/centreon/api/latest
+    username: username
+    password: password
+    attributes:
+        - templates
+
+# Sample configuration file Centreon Host dynamic inventory using search filter
+    plugin: parnoud.centreon.centreon_inventory_host
+    hostname: http://centreon.home/centreon/api/latest
+    username: username
+    password: password
+    search:
+    "$or":
+        - "name":
+            "$lk": "server-%"
+        - "name":
+            "$lk": "switch-%"
+"""
+
 import json
 import os
+
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ansible.errors import AnsibleError
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
@@ -76,7 +114,7 @@ from ansible_collections.parnoud.centreon.plugins.module_utils.host import find_
 
 class InventoryModule(BaseInventoryPlugin):
 
-    NAME = 'parnoud.centreon.centreon_inventory'
+    NAME = 'parnoud.centreon.centreon_inventory_host'
 
     def __init__(self):
         super(InventoryModule, self).__init__()
@@ -84,7 +122,6 @@ class InventoryModule(BaseInventoryPlugin):
 
     def _get_data(self):
         hostname = self.get_option('hostname') or os.getenv('CENTREON_HOSTNAME') if "hostname" in self.config else None
-        port = self.get_option('port') or os.getenv('CENTREON_PORT') if "port" in self.config else None
         token = self.get_options('token') or os.getenv('CENTREON_TOKEN') if "token" in self.config else None
         username = self.get_option('username') or os.getenv('CENTREON_USERNAME') if "username" in self.config else None
         password = self.get_option('password') or os.getenv('CENTREON_PASSWORD') if "password" in self.config else None
@@ -98,7 +135,6 @@ class InventoryModule(BaseInventoryPlugin):
             print(filter_criteria)
         try:
             api = CentreonAPI(hostname=hostname,
-                              port=port,
                               token=token,
                               username=username,
                               password=password,
@@ -109,7 +145,7 @@ class InventoryModule(BaseInventoryPlugin):
             if len(result) >= 1:
                 return result
             else:
-                 raise AnsibleError(f"No result found with search value: {filter_criteria}")
+                raise AnsibleError(f"No result found with search value: {filter_criteria}")
         except Exception as e:
             raise AnsibleError(f"Error fetching hosts from Centreon API: {str(e)}")
 
@@ -154,7 +190,7 @@ class InventoryModule(BaseInventoryPlugin):
             self.inventory.set_variable(host['name'], "alias", host['alias'])
             self.inventory.set_variable(host['name'], "address", host['address'])
             self.inventory.set_variable(host['name'], "monitoring_server", host['monitoring_server'])
-            
+
             if 'templates' in attributes or len(attributes) == 0:
                 self.inventory.set_variable(host['name'], "list_templates", host['templates'])
             if 'normal_check_interval' in attributes or len(attributes) == 0:

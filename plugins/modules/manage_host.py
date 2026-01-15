@@ -21,39 +21,9 @@ author: "Pierre ARNOUD (@parnoud)"
 options:
     state:
         description: Desired state of the host.
-        choices: ['present', 'absent', 'update']
-        default: 'present'
+        choices: ['create', 'delete', 'update', 'replace']
+        default: 'create'
         type: str
-    hostname:
-        description: URL to Centreon API v2.
-        required: false
-        type: str
-    port:
-        description: Port to Centreon API v2.
-        required: false
-        type: int
-    token:
-        description: Centreon API token.
-        required: false
-        type: str
-    username:
-        description: Centreon username.
-        required: false
-        type: str
-    password:
-        description: Centreon password.
-        required: false
-        type: str
-    validate_certs:
-        description: Whether to validate SSL certificates.
-        type: bool
-        default: false
-        required: false
-    timeout:
-        description: Timeout for API requests.
-        type: int
-        default: 30
-        required: false
     monitoring_server_id:
         description: ID of the monitoring server where the host will be created.
         required: false
@@ -236,274 +206,43 @@ options:
     groups:
         description: Groups associated with the host.
         required: false
-        type: dict
+        type: list
     templates:
         description: Templates associated with the host.
         required: false
-        type: dict
+        type: list
     macros:
         description: Macros associated with the host.
         required: false
-        type: dict
+        type: list
+extends_documentation_fragment:
+    - parnoud.centreon.base_options
 '''
 
 EXAMPLES = r'''
 
 '''
 
+import json
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
-from ansible_collections.parnoud.centreon.plugins.module_utils.host import delete_host_configuration, partially_update_host_configuration, find_all_host_configuration, create_host_configuration, get_host
+from ansible_collections.parnoud.centreon.plugins.module_utils.host import (
+    delete_host_configuration,
+    partially_update_host_configuration,
+    find_all_host_configuration,
+    create_host_configuration
+)
 from ansible_collections.parnoud.centreon.plugins.module_utils.host_group import list_all_host_groups_configuration
 from ansible_collections.parnoud.centreon.plugins.module_utils.host_template import find_all_host_template_configuration
-import json
+from ansible_collections.parnoud.centreon.plugins.module_utils.argument_spec import base_argument_spec
 
 
-def main():
+def manage_host(module):
     """entry point for module execution"""
-
-    spec = {
-        'state': {
-            'type': 'str',
-            'default': 'create',
-            'choices': ['create', 'delete', 'update', 'replace'],
-        },
-        'hostname': {
-            'type': 'str',
-            'required': False,
-        },
-        'port': {
-            'type': 'int',
-            'required': False,
-        },
-        'token': {
-            'type': 'str',
-            'required': False,
-            'no_log': True,
-        },
-        'username': {
-            'type': 'str',
-            'required': False,
-        },
-        'password': {
-            'type': 'str',
-            'required': False,
-            'no_log': True,
-        },
-        'validate_certs': {
-            'type': 'bool',
-            'default': False,
-            'required': False,
-        },
-        'timeout': {
-            'type': 'int',
-            'default': 30,
-            'required': False,
-        },
-        'monitoring_server_id': {
-            'type': 'int',
-            'required': False,
-        },
-        'host_id': {
-            'type': 'int',
-            'required': False,
-        },
-        'name': {
-            'type': 'str',
-            'required': False,
-        },
-        'new_name': {
-            'type': 'str',
-            'required': False,
-        },
-        'address': {
-            'type': 'str',
-            'required': False,
-        },
-        'alias': {
-            'type': 'str',
-            'required': False,
-        },
-        'snmp_community': {
-            'type': 'str',
-            'required': False,
-        },
-        'snmp_version': {
-            'type': 'str',
-            'required': False,
-            'choices': ['1', '2c', '3'],
-        },
-        'geo_coords': {
-            'type': 'str',
-            'required': False,
-        },
-        'timezone_id': {
-            'type': 'int',
-            'required': False,
-        },
-        'severity_id': {
-            'type': 'int',
-            'required': False,
-        },
-        'check_command_id': {
-            'type': 'int',
-            'required': False,
-        },
-        'check_command_args': {
-            'type': 'dict',
-            'required': False,
-        },
-        'check_timeperiod_id': {
-            'type': 'int',
-            'required': False,
-        },
-        'max_check_attempts': {
-            'type': 'int',
-            'required': False,
-        },
-        'normal_check_interval': {
-            'type': 'int',
-            'required': False,
-        },
-        'retry_check_interval': {
-            'type': 'int',
-            'required': False,
-        },
-        'active_check_enabled': {
-            'type': 'int',
-            'required': False,
-            'choices': [0, 1, 2],
-        },
-        'passive_check_enabled': {
-            'type': 'int',
-            'required': False,
-            'choices': [0, 1, 2],
-        },
-        'notifications_enabled': {
-            'type': 'int',
-            'required': False,
-            'choices': [0, 1, 2],
-        },
-        'notification_options': {
-            'type': 'int',
-            'required': False,
-            'choices': [0, 1, 2, 4, 8, 16],
-        },
-        'notification_interval': {
-            'type': 'int',
-            'required': False,
-        },
-        'notification_timeperiod_id': {
-            'type': 'int',
-            'required': False,
-        },
-        'add_inherited_contact_group': {
-            'type': 'bool',
-            'required': False,
-        },
-        'add_inherited_contact': {
-            'type': 'bool',
-            'required': False,
-        },
-        'first_notification_delay': {
-            'type': 'int',
-            'required': False,
-        },
-        'recovery_notification_delay': {
-            'type': 'int',
-            'required': False,
-        },
-        'acknowledgement_timeout': {
-            'type': 'int',
-            'required': False,
-        },
-        'freshness_threshold': {
-            'type': 'int',
-            'required': False,
-        },
-        'flap_detection_enabled': {
-            'type': 'int',
-            'required': False,
-            'choices': [0, 1, 2],
-        },
-        'low_flap_threshold': {
-            'type': 'int',
-            'required': False,
-        },
-        'high_flap_threshold': {
-            'type': 'int',
-            'required': False,
-        },
-        'event_handler_enabled': {
-            'type': 'int',
-            'required': False,
-            'choices': [0, 1, 2],
-        },
-        'event_handler_command_id': {
-            'type': 'int',
-            'required': False,
-        },
-        'event_handler_command_args': {
-            'type': 'dict',
-            'required': False,
-        },
-        'note_url': {
-            'type': 'str',
-            'required': False,
-        },
-        'note': {
-            'type': 'str',
-            'required': False,
-        },
-        'action_url': {
-            'type': 'str',
-            'required': False,
-        },
-        'icon_id': {
-            'type': 'int',
-            'required': False,
-        },
-        'icon_alternative': {
-            'type': 'str',
-            'required': False,
-        },
-        'comment': {
-            'type': 'str',
-            'required': False,
-        },
-        'is_activated': {
-            'type': 'bool',
-            'required': False,
-        },
-        'categories': {
-            'type': 'dict',
-            'required': False,
-        },
-        'groups': {
-            'type': 'list',
-            'required': False,
-        },
-        'templates': {
-            'type': 'list',
-            'required': False,
-        },
-        'macros': {
-            'type': 'dict',
-            'required': False,
-        },
-    }
-
-    module = AnsibleModule(
-        argument_spec=spec,
-        supports_check_mode=True,
-        required_one_of=[['token', 'username', 'password', 'name', 'host_id']],
-        mutually_exclusive=[['token', 'username'], ['token', 'password'], ['name', 'host_id']],
-    )
 
     api = CentreonAPI(
         hostname=module.params.get('hostname'),
-        port=module.params.get('port'),
         token=module.params.get('token'),
         username=module.params.get('username'),
         password=module.params.get('password'),
@@ -568,7 +307,7 @@ def main():
                 filter_criteria['search'] = json.dumps({'name': val})
                 host_groups = list_all_host_groups_configuration(api, params=filter_criteria)
                 if len(host_groups) != 1:
-                    module.fail_json(msg=f"Host group {val} multiple or not found for update.")
+                    return False, f"Host group {val} multiple or not found for update."
                 host_group_id = host_groups[0]['id']
                 new_groups.append(host_group_id)
             else:
@@ -583,7 +322,7 @@ def main():
                 filter_criteria['search'] = json.dumps({'name': val})
                 hosts_templates = find_all_host_template_configuration(api, params=filter_criteria)
                 if len(hosts_templates) != 1:
-                    module.fail_json(msg=f"Host template {val} multiple or not found for update.")
+                    return False, f"Host template {val} multiple or not found for update."
                 host_template_id = hosts_templates[0]['id']
                 new_templates.append(host_template_id)
             else:
@@ -593,8 +332,8 @@ def main():
     if module.params['state'] == 'create':
 
         result = create_host_configuration(api, host_data=host_data)
-        module.exit_json(Created=True, result=result['id'])
-        
+        return True, result
+
     elif module.params['state'] == 'replace':
 
         host_id = None
@@ -603,7 +342,7 @@ def main():
             host_data['name'] = module.params['new_name']
         else:
             host_data.pop('name', None)
-        
+
         if module.params['host_id']:
             host_id = module.params['host_id']
 
@@ -612,14 +351,16 @@ def main():
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
             hosts = find_all_host_configuration(api, params=filter_criteria)
             if len(hosts) != 1:
-                module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update. {filter_criteria}")
+                return False, f"Host {module.params['name']} multiple or not found for update. {filter_criteria}"
             host_id = hosts[0]['id']
 
         if host_id:
             if partially_update_host_configuration(api, host_id, host_data):
-                module.exit_json(changed=True, result={"host_id": host_id, "status": "updated"})
+                filter_criteria = {}
+                filter_criteria['search'] = json.dumps({'id': host_id})
+                return True, find_all_host_configuration(api, params=filter_criteria)
         else:
-            module.fail_json(msg="Host ID or name must be provided for update operation.")
+            return False, "Host ID or name must be provided for update operation."
 
     elif module.params['state'] == 'update':
 
@@ -630,7 +371,7 @@ def main():
             host_data['name'] = module.params['new_name']
         else:
             host_data.pop('name', None)
-        
+
         if module.params['host_id']:
             host_id = module.params['host_id']
 
@@ -639,34 +380,36 @@ def main():
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
             hosts = find_all_host_configuration(api, params=filter_criteria)
             if len(hosts) != 1:
-                module.fail_json(msg=f"Host {module.params['name']} multiple or not found for update. {filter_criteria}")
+                return False, f"Host {module.params['name']} multiple or not found for update. {filter_criteria}"
             host_id = hosts[0]['id']
             current_host_data = hosts[0]
 
-        current_host_data.pop('id',None)
-        current_host_data.pop('monitoring_server',None)
+        current_host_data.pop('id', None)
+        current_host_data.pop('monitoring_server', None)
 
-        current_host_data.pop('notification_timeperiod',None)
-        current_host_data.pop('check_timeperiod',None)
-        current_host_data.pop('severity',None)
+        current_host_data.pop('notification_timeperiod', None)
+        current_host_data.pop('check_timeperiod', None)
+        current_host_data.pop('severity', None)
 
         current_host_data["categories"] = [item["id"] for item in current_host_data["categories"]]
         if host_data.get('categories'):
-            current_host_data["categories"] += [item for item in host_data["categories"]]
+            current_host_data["categories"] += list(host_data['categories'])
 
         current_host_data["groups"] = [item["id"] for item in current_host_data["groups"]]
         if host_data.get('groups'):
-            current_host_data["groups"] += [item for item in host_data['groups']]
+            current_host_data["groups"] += list(host_data['groups'])
 
         current_host_data["templates"] = [item["id"] for item in current_host_data["templates"]]
         if host_data.get('templates'):
-            current_host_data["templates"] += [item for item in host_data['templates']]        
+            current_host_data["templates"] += list(host_data['templates'])
 
         if host_id:
             if partially_update_host_configuration(api, host_id, current_host_data):
-                module.exit_json(changed=True, result={"host_id": host_id, "status": "updated"})
+                filter_criteria = {}
+                filter_criteria['search'] = json.dumps({'id': host_id})
+                return True, find_all_host_configuration(api, params=filter_criteria)
         else:
-            module.fail_json(msg="Host ID or name must be provided for update operation.")
+            return False, "Host ID or name must be provided for update operation."
 
     elif module.params['state'] == 'delete':
         host_id = None
@@ -679,18 +422,80 @@ def main():
 
             hosts = find_all_host_configuration(api, params=filter_criteria)
             if len(hosts) == 0:
-                module.exit_json(skipped=True,result={"host_id": host_id, "status": "ignored"})
+                return True, hosts
             elif len(hosts) >= 2:
-                module.fail_json(msg=f"Host {module.params['name']} multiple found for update. {len(hosts)}")
+                return False, f"Host {module.params['name']} multiple for update. {len(hosts)}"
 
             host_id = hosts[0]['id']
 
-
         if host_id:
             if delete_host_configuration(api, host_id):
-                module.exit_json(changed=True, result={"host_id": host_id, "status": "deleted"})
+                return True, hosts[0]
         else:
-            module.fail_json(msg="Host ID or name must be provided for delete operation.")
+            return False, "Host ID or name must be provided for delete operation."
+
+
+def main():
+    argument_spec = base_argument_spec()
+    argument_spec.update(
+        state=dict(type='str', choices=['create', 'delete', 'update', 'replace'], default='create'),
+        monitoring_server_id=dict(type='int'),
+        host_id=dict(type='int', default=None),
+        name=dict(type='str', default=None),
+        new_name=dict(type='str', default=None),
+        address=dict(type='str', default=None),
+        alias=dict(type='str', default=None),
+        snmp_community=dict(type='str', default=None),
+        snmp_version=dict(type='str', choices=['1', '2c', '3'], default=None),
+        geo_coords=dict(type='str', default=None),
+        timezone_id=dict(type='int', default=None),
+        severity_id=dict(type='int', default=None),
+        check_command_id=dict(type='int', default=None),
+        check_command_args=dict(type='dict', default=None),
+        check_timeperiod_id=dict(type='int', default=None),
+        max_check_attempts=dict(type='int', default=None),
+        normal_check_interval=dict(type='int', default=None),
+        retry_check_interval=dict(type='int', default=None),
+        active_check_enabled=dict(type='int', choices=[0, 1, 2], default=None),
+        passive_check_enabled=dict(type='int', choices=[0, 1, 2], default=None),
+        notifications_enabled=dict(type='int', choices=[0, 1, 2], default=None),
+        notification_options=dict(type='int', choices=[0, 1, 2, 4, 8, 16], default=None),
+        notification_interval=dict(type='int', default=None),
+        notification_timeperiod_id=dict(type='int', default=None),
+        add_inherited_contact_group=dict(type='bool', default=None),
+        add_inherited_contact=dict(type='bool', default=None),
+        first_notification_delay=dict(type='int', default=None),
+        recovery_notification_delay=dict(type='int', default=None),
+        acknowledgement_timeout=dict(type='int', default=None),
+        freshness_threshold=dict(type='int', default=None),
+        flap_detection_enabled=dict(type='int', choices=[0, 1, 2], default=None),
+        low_flap_threshold=dict(type='int', default=None),
+        high_flap_threshold=dict(type='int', default=None),
+        event_handler_enabled=dict(type='int', choices=[0, 1, 2], default=None),
+        event_handler_command_id=dict(type='int', default=None),
+        event_handler_command_args=dict(type='dict', default=None),
+        note_url=dict(type='str', default=None),
+        note=dict(type='str', default=None),
+        action_url=dict(type='str', default=None),
+        icon_id=dict(type='int', default=None),
+        icon_alternative=dict(type='str', default=None),
+        comment=dict(type='str', default=None),
+        is_activated=dict(type='bool', default=None),
+        categories=dict(type='list', default=None),
+        groups=dict(type='list', default=None),
+        templates=dict(type='list', default=None),
+        macros=dict(type='list', default=None),
+    )
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True
+    )
+    return_type, data = manage_host(module)
+    if return_type:
+        module.exit_json(changed=False, data=data)
+    else:
+        module.fail_json(msg=data)
+
 
 if __name__ == '__main__':
     main()

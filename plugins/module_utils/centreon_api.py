@@ -8,78 +8,73 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 #
 
+
+DOCUMENTATION = '''
+---
+author:
+- ARNOUD Pierre (@parnoud)
+name : centreon_api
+short_description: CentreonAPI Plugin for Centreon REST API V2
+description:
+  - This CentreonAPI plugin provides methods to connect to centreon over a HTTP(S)-based APIs v2.
+'''
+
 import json
-import requests
+
+try:
+    import requests
+except ImportError as imp_exc:
+    ANOTHER_LIBRARY_IMPORT_ERROR = imp_exc
+else:
+    ANOTHER_LIBRARY_IMPORT_ERROR = None
 
 
 class CentreonAPI:
     """CLass to interact with Centreon API v2."""
 
-    def __init__(self, protocol=None, hostname=None, port=None, path=None, token=None, username=None, password=None, validate_certs=None, timeout=None):
-        self.protocol = protocol if protocol else 'http'
-        self.hostname = hostname if hostname else 'localhost'
-        self.port = port if port else 80
-        self.path = path if path else 'centreon/api/latest'
-        self.validate_certs = validate_certs if validate_certs is not None else False
-        self.timeout = timeout if timeout else 30
-        self._build_url()
+    def __init__(self,
+                 hostname: str = None,
+                 token: str = None,
+                 username: str = None,
+                 password: str = None,
+                 validate_certs: bool = False,
+                 timeout: int = 30):
+        self.hostname = hostname
+        self.token = token
+        self.validate_certs = validate_certs
+        self.timeout = timeout
 
-        if token:
-            self.auth_method = 'token'
-            self.auth_token = token
+        if ANOTHER_LIBRARY_IMPORT_ERROR:
+            raise ValueError('another_library must be installed to use this plugin') from ANOTHER_LIBRARY_IMPORT_ERROR
+
+        if hostname is None:
+            raise ValueError('Hostname is required')
+
+        if self.token:
+            self.headers = {
+                'ContentType' : 'application/json',
+                'X-AUTH-TOKEN' : self.token
+            }
         elif username and password:
-            self.auth_method = 'username_password'
-            self.auth_username = username
-            self.auth_password = password
+            self.login(username=username, password=password)
         else:
             raise ValueError("Either token or username and password must be provided for authentication.")
 
-        self.session_token = None
-        self._authenticate()
-
-    def _request(self, method: str, endpoint: str, data: dict=None, params:dict=None)->tuple[int, bytes]:
+    def _request(self,
+                 method: str,
+                 endpoint: str,
+                 data: dict = None,
+                 params: dict = None) -> tuple[int, bytes]:
         """Request to centreon API v2 endpoint with given method, data and query parameters."""
-        url = f"{self.base_url}/{endpoint}"
+        url = f"{self.hostname}/{endpoint}"
 
         response = requests.request(method=method, url=url, headers=self.headers, json=data, params=params, verify=self.validate_certs, timeout=self.timeout)
         return response.status_code, response.content
 
-    def _authenticate(self):
-        """Authenticate on centreon APIv2 with username/password or token."""
-        if self.auth_method == 'token':
-            self.headers = {
-                'ContentType' : 'application/json',
-                'X-AUTH-TOKEN' : self.auth_token
-            }
-            self.session_token = self.auth_token
-        else:
-            self.headers = {
-                'ContentType' : 'application/json'
-            }
-            auth_data = {
-                'security': {
-                    'credentials': {
-                        'login': self.auth_username,
-                        'password': self.auth_password
-                    }
-                }
-            }
-
-            try:
-                code, data = self._request(method='POST', endpoint='login', data=auth_data)
-                if code == 200:
-                    response = json.loads(data)
-                    self.session_token = response['security']['token']
-                    self.headers = {
-                        'ContentType' : 'application/json',
-                        'X-AUTH-TOKEN' : self.session_token
-                    }
-                else:
-                    raise Exception(f"Authentication failed: {data}")
-            except Exception as e:
-                raise Exception(f"Failed to authenticate: {str(e)}")
-
-    def _get_all_paginated(self, method: str, endpoint: str, params: dict=None)-> dict:
+    def _get_all_paginated(self,
+                           method: str,
+                           endpoint: str,
+                           params: dict = None) -> dict:
         """Return all data from a paginated endpoint."""
         all_results = []
         page = 1
@@ -120,8 +115,43 @@ class CentreonAPI:
 
         return all_results
 
-    def _build_url(self):
-        url = '{0}://{1}:{2}'.format(self.protocol, self.hostname, self.port)
-        if self.path:
-            url = '{0}/{1}'.format(url, self.path)
-        self.base_url = url
+    def login(self,
+              username: str,
+              password: str):
+        """Entry point to retrieve an authentication token."""
+        self.headers = {
+            'ContentType' : 'application/json'
+        }
+        data = {
+            'security': {
+                'credentials': {
+                    'login': username,
+                    'password': password
+                }
+            }
+        }
+
+        code, data = self._request(method='POST', endpoint='login', data=data)
+        if code == 200:
+            response = json.loads(data)
+            self.token = response['security']['token']
+            self.headers = {
+                'ContentType' : 'application/json',
+                'X-AUTH-TOKEN' : self.token
+            }
+        elif code == 400:
+            raise Exception(f"Server cannot or will not process the request : {json.loads(data)['message']}")
+        elif code == 401:
+            raise Exception(f"Unauthorized : {json.loads(data)['message']}")
+        else:
+            raise Exception(f"Failed: {json.loads(data)['message']}")
+
+    def logout(self):
+        """Entry point to delete an existing authentication token."""
+        code, data = self._request(method='GET', endpoint='logout')
+        if code == 200:
+            return json.loads(data)
+        elif code == 403:
+            raise Exception(f"Forbidden : {json.loads(data)['message']}")
+        else:
+            raise Exception(f"Failed: {json.loads(data)['message']}")

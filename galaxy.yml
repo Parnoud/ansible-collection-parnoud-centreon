@@ -1,15 +1,17 @@
 ---
 namespace: "parnoud"
 name: "centreon"
-version: 1.0.0
+version: 1.0.1
 readme: README.md
 authors:
-  - Pierre ARNOUD
+  - ARNOUD Pierre (@parnoud)
 
 description: Centreon modules and plugins for Ansible
 license_file: LICENSE
 
-tags: ["linux", "tools"]
+tags:
+  - centreon
+  - supervision
 dependencies:
   "ansible.utils": "*" 
 
