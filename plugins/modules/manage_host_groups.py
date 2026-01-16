@@ -149,7 +149,7 @@ def manage_host_groups(module):
             filter_criteria = {}
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
             host_groups = list_all_host_groups(api, query_parameters=filter_criteria)
-            
+
             if len(host_groups) == 0:
                 return True, host_groups
             elif len(host_groups) >= 2:
