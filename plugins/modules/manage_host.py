@@ -12,10 +12,11 @@
 DOCUMENTATION = r'''
 ---
 module: manage_host
-short_description: Create a host in Centreon via API v2
+short_description: Manage host in Centreon via API v2
 description:
     - Create a host in Centreon.
     - Update a host in Centreon.
+    - Replace a host in Centreon
     - Delete a host in Centreon.
 author: "Pierre ARNOUD (@parnoud)"
 options:
@@ -202,7 +203,7 @@ options:
     categories:
         description: Categories associated with the host.
         required: false
-        type: dict
+        type: list
     groups:
         description: Groups associated with the host.
         required: false
@@ -220,7 +221,233 @@ extends_documentation_fragment:
 '''
 
 EXAMPLES = r'''
+- name: Create host
+    parnoud.centreon.manage_host:
+    state: create
+    hostname: centreon.com/centreon/api/latest
+    username: user
+    password: pass
+    monitoring_server_id: 1
+    name: my-host
+    address: 127.0.0.1
 
+- name: Update host
+    parnoud.centreon.manage_host:
+    state: replace
+    hostname: centreon.com/centreon/api/latest
+    username: user
+    password: pass
+    name: my-host
+    new_name: the-host
+    groups:
+        - test_name
+        - test_update
+
+- name: Update host
+    parnoud.centreon.manage_host:
+    state: update
+    hostname: centreon.com/centreon/api/latest
+    username: user
+    password: pass
+    name: my-host
+    templates:
+        - generic-passive-host-custom
+    groups:
+        - test_update
+
+- name: Delete the host
+    parnoud.centreon.manage_host:
+    state: delete
+    hostname: centreon.com/centreon/api/latest
+    username: user
+    password: pass
+    name: my-host
+'''
+
+RETURN = r'''
+Create:
+    description:
+        - Create host
+    returned: On success
+    type: dict
+    sample:
+        {
+            "id": 1,
+            "monitoring_server_id": 1,
+            "name": "generic-active-host",
+            "address": "127.0.0.1",
+            "alias": "generic-active-host",
+            "snmp_version": "2c",
+            "geo_coords": "48.10,12.5",
+            "timezone_id": 1,
+            "severity_id": 1,
+            "check_command_id": 1,
+            "check_command_args": [
+                "0",
+                "OK"
+            ],
+            "check_timeperiod_id": 1,
+            "max_check_attempts": 0,
+            "normal_check_interval": 0,
+            "retry_check_interval": 0,
+            "active_check_enabled": 0,
+            "passive_check_enabled": 0,
+            "notification_enabled": 0,
+            "notification_options": 5,
+            "notification_interval": 0,
+            "notification_timeperiod_id": 1,
+            "add_inherited_contact_group": true,
+            "add_inherited_contact": true,
+            "first_notification_delay": 0,
+            "recovery_notification_delay": 0,
+            "acknowledgement_timeout": 0,
+            "freshness_checked": 0,
+            "freshness_threshold": 0,
+            "flap_detection_enabled": 0,
+            "low_flap_threshold": 0,
+            "high_flap_threshold": 0,
+            "event_handler_enabled": 0,
+            "event_handler_command_id": 1,
+            "event_handler_command_args": [
+                "0",
+                "OK"
+            ],
+            "note_url": "string",
+            "note": "string",
+            "action_url": "string",
+            "icon_id": 1,
+            "icon_alternative": "string",
+            "comment": "string",
+            "is_activated": true,
+            "categories": [
+                {
+                    "id": 1,
+                    "name": "host-category-name"
+                }
+            ],
+            "groups": [
+                {
+                    "id": 1,
+                    "name": "host-group-name"
+                }
+            ],
+            "templates": [
+                {
+                    "id": 1,
+                    "name": "parent-template-name"
+                }
+            ],
+            "macros": [
+                {
+                    "name": "MacroName",
+                    "value": "macroValue",
+                    "is_password": false,
+                    "description": "Some text to describe the macro"
+                }
+            ]
+        }
+
+replace:
+    description:
+        - Replace host parametre with given parameter, keep the other in place
+    returned: On success
+    type: dict
+    sample:
+        {
+            "id": 1,
+            "name": "Centreon-Server",
+            "alias": "",
+            "address": "127.0.0.1",
+            "monitoring_server": {
+                "id": 1,
+                "name": "Central"
+            },
+            "templates": [
+                {}
+            ],
+            "normal_check_interval": 5,
+            "retry_check_interval": 1,
+            "notification_timeperiod": {
+                "id": 1,
+                "name": "24x7"
+            },
+            "check_timeperiod": {
+                "id": 1,
+                "name": "24x7"
+            },
+            "severity": {
+                "id": 1,
+                "name": "Priority 1"
+            },
+            "categories": [
+                {
+                    "id": 1,
+                    "name": "host-category-name"
+                }
+            ],
+            "groups": [
+                {
+                    "id": 1,
+                    "name": "host-group-name"
+                }
+            ],
+            "is_activated": true
+        }
+
+update:
+    description:
+        - Update host parameters with given parameter (addition), keep the other in place
+    returned: On succes
+    type: dict
+    sample:
+        {
+            "id": 1,
+            "name": "Centreon-Server",
+            "alias": "",
+            "address": "127.0.0.1",
+            "monitoring_server": {
+                "id": 1,
+                "name": "Central"
+            },
+            "templates": [
+                {}
+            ],
+            "normal_check_interval": 5,
+            "retry_check_interval": 1,
+            "notification_timeperiod": {
+                "id": 1,
+                "name": "24x7"
+            },
+            "check_timeperiod": {
+                "id": 1,
+                "name": "24x7"
+            },
+            "severity": {
+                "id": 1,
+                "name": "Priority 1"
+            },
+            "categories": [
+                {
+                    "id": 1,
+                    "name": "host-category-name"
+                }
+            ],
+            "groups": [
+                {
+                    "id": 1,
+                    "name": "host-group-name"
+                }
+            ],
+            "is_activated": true
+        }
+
+delete:
+    description:
+        - Delete the host
+    type: int
+    returned: On success
+    sample:
+        host_id
 '''
 
 import json

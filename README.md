@@ -5,6 +5,32 @@ This repository contains the `parnoud.centreon` Ansible Collection.
 <!--start requires_ansible-->
 <!--end requires_ansible-->
 
+## Playbook requierements
+
+To run command in playbook you need to specify :
+
+```yaml
+---
+- name: Create host
+  hosts: all
+  gather_facts: false
+  connection: local
+  serial: 1
+
+  tasks:
+    - name: Create host
+      parnoud.centreon.manage_host:
+        state: create
+        hostname: https://centreon.com/centreon/api/latest
+        username: user
+        password: pass
+        name: my-host
+        address: 127.0.0.1
+```
+
+- API doesnt support multiple requests at the same time, so we use `serial: 1`
+- Use `connection: local` to run task on localhost who use the collection
+
 ## External requirements
 
 Some modules and plugins require external libraries. Please check the
