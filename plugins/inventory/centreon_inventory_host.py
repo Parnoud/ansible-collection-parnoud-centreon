@@ -10,69 +10,69 @@
 
 
 DOCUMENTATION = r'''
-    name: centreon_inventory_host
-    short_description: Centreon host inventory source
-    author:
-        - ARNOUD Pierre (@parnoud)
-    description:
-        - Get Centreon host as inventory hosts
-        - Uses any file which ends with centreon.yml or centreon.yaml as YAML configuration file.
-    options:
-        hostname:
-            description: URL to Centreon API v2.
-            required: true
-            env:
-                - name: CENTREON_HOSTNAME
-        username:
-            description: Username to Centreon API v2
-            required: false
-            env:
-                - name: CENTREON_USERNAME
-        password:
-            description: Password to Centreon API v2
-            required: false
-            env:
-                - name: CENTREON_PASSWORD
-        token:
-            description: Token to Centreon API v2
-            required: false
-            env:
-                - name: CENTREON_TOKEN
-        validate_certs:
-            description: Whether to validate SSL certificates.
-            type: bool
-            default: false
-            env:
-                - name: CENTREON_VALIDATE_CERTS
-        timeout:
-            description: Timeout for API requests.
-            type: int
-            default: 30
-            env:
-                - name: CENTREON_TIMEOUT
-        search:
-            description: search criteria for fetching hosts (list or dict).
-            required: false
-        attributes:
-            description:
-                - attributes to include in the inventory.
-                - default add all attributes and groups by templates, groups and categories
-                - templates (cetreon host templates) listed as list_templates
-                - groups (cetreon host groups) listed as list_groups
-                - categories (centreon host categories) listed as list_categories
-            type: list
-            required: false
-            elements: str
-            default:
-                - monitoring_server
-                - templates
-                - normal_check_interval
-                - retry_check_interval
-                - check_timeperiod
-                - severity
-                - categories
-                - groups
-                - is_activated
+name: centreon_inventory_host
+short_description: Centreon host inventory source
+author:
+    - ARNOUD Pierre (@parnoud)
+description:
+    - Get Centreon host as inventory hosts
+    - Uses any file which ends with centreon.yml or centreon.yaml as YAML configuration file.
+options:
+    hostname:
+        description: URL to Centreon API v2.
+        required: true
+        env:
+            - name: CENTREON_HOSTNAME
+    username:
+        description: Username to Centreon API v2
+        required: false
+        env:
+            - name: CENTREON_USERNAME
+    password:
+        description: Password to Centreon API v2
+        required: false
+        env:
+            - name: CENTREON_PASSWORD
+    token:
+        description: Token to Centreon API v2
+        required: false
+        env:
+            - name: CENTREON_TOKEN
+    validate_certs:
+        description: Whether to validate SSL certificates.
+        type: bool
+        default: false
+        env:
+            - name: CENTREON_VALIDATE_CERTS
+    timeout:
+        description: Timeout for API requests.
+        type: int
+        default: 30
+        env:
+            - name: CENTREON_TIMEOUT
+    search:
+        description: search criteria for fetching hosts (list or dict).
+        required: false
+    attributes:
+        description:
+            - attributes to include in the inventory.
+            - default add all attributes and groups by templates, groups and categories
+            - templates (cetreon host templates) listed as list_templates
+            - groups (cetreon host groups) listed as list_groups
+            - categories (centreon host categories) listed as list_categories
+        type: list
+        required: false
+        elements: str
+        default:
+            - monitoring_server
+            - templates
+            - normal_check_interval
+            - retry_check_interval
+            - check_timeperiod
+            - severity
+            - categories
+            - groups
+            - is_activated
 '''
 
 EXAMPLES = r"""
