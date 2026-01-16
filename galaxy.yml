@@ -1,7 +1,7 @@
 ---
 namespace: "parnoud"
 name: "centreon"
-version: 1.0.3
+version: 1.0.4
 readme: README.md
 authors:
   - ARNOUD Pierre (@parnoud)
