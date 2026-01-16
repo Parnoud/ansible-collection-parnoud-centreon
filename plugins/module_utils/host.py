@@ -44,7 +44,7 @@ def partially_update_host_configuration(api: CentreonAPI, host_id: int, host_dat
         raise Exception(f"Failed to partially update host: {json.loads(data)['message']}")
 
 
-def find_all_host_configuration(api: CentreonAPI, params = None):
+def find_all_host_configuration(api: CentreonAPI, params=None):
     """Return all host configurations."""
     return api._get_all_paginated('GET', 'configuration/hosts', params=params)
 

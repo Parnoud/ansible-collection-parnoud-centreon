@@ -33,219 +33,179 @@ options:
         description: Host alias.
         required: false
         type: str
-        default: none
     snmp_community:
         description: SNMP community string.
         required: false
         type: str
-        default: none
     snmp_version:
         description: SNMP version.
         required: false
         type: str
         choices: ['1', '2c', '3']
-        default: none
     geo_coords:
         description: Geographical coordinates of the host.
         required: false
         type: str
-        default: none
     timezone_id:
         description: Timezone ID for the host.
         required: false
         type: int
-        default: none
     severity_id:
         description: Severity ID for the host.
         required: false
         type: int
-        default: none
     check_command_id:
         description: Check command ID for the host.
         required: false
         type: int
-        default: none
     check_command_args:
         description: Arguments for the check command.
         required: false
         type: dict
-        default: none
     check_timeperiod_id:
         description: Check time period ID for the host.
         required: false
         type: int
-        default: none
     max_check_attempts:
         description: Maximum number of check attempts.
         required: false
         type: int
-        default: none
     normal_check_interval:
         description: Normal check interval.
         required: false
         type: int
-        default: none
     retry_check_interval:
         description: Retry check interval.
         required: false
         type: int
-        default: none
     active_check_enabled:
         description: Whether active checks are enabled.
         required: false
         type: int
         choices: [0, 1, 2]
-        default: none
     passive_check_enabled:
         description: Whether passive checks are enabled.
         required: false
         type: int
         choices: [0, 1, 2]
-        default: none
     notifications_enabled:
         description: Whether notifications are enabled.
         required: false
         type: int
         choices: [0, 1, 2]
-        default: none
     notification_options:
         description: Notification options.
         required: false
         type: int
         choices: [0, 1, 2, 4, 8, 16]
-        default: none
     notification_interval:
         description: Notification interval.
         required: false
         type: int
-        default: none
     notification_timeperiod_id:
         description: Notification time period ID.
         required: false
         type: int
-        default: none
     add_inherited_contact_group:
         description: Whether to add inherited contact groups.
         required: false
         type: bool
-        default: none
     add_inherited_contact:
         description: Whether to add inherited contacts.
         required: false
         type: bool
-        default: none
     first_notification_delay:
         description: First notification delay.
         required: false
         type: int
-        default: none
     recovery_notification_delay:
         description: Recovery notification delay.
         required: false
         type: int
-        default: none
     acknowledgement_timeout:
         description: Acknowledgement timeout.
         required: false
         type: int
-        default: none
     freshness_threshold:
         description: Freshness threshold.
         required: false
         type: int
-        default: none
     flap_detection_enabled:
         description: Whether flap detection is enabled.
         required: false
         type: int
         choices: [0, 1, 2]
-        default: none
     low_flap_threshold:
         description: Low flap threshold.
         required: false
         type: int
-        default: none
     high_flap_threshold:
         description: High flap threshold.
         required: false
         type: int
-        default: none
     event_handler_enabled:
         description: Whether event handler is enabled.
         required: false
         type: int
         choices: [0, 1, 2]
-        default: none
     event_handler_command_id:
         description: Event handler command ID.
         required: false
         type: int
-        default: none
     event_handler_command_args:
         description: Arguments for the event handler command.
         required: false
         type: dict
-        default: none
     note_url:
         description: Note URL for the host.
         required: false
         type: str
-        default: none
     note:
         description: Note for the host.
         required: false
         type: str
-        default: none
     action_url:
         description: Action URL for the host.
         required: false
         type: str
-        default: none
     icon_id:
         description: Icon ID for the host.
         required: false
         type: int
-        default: none
     icon_alternative:
         description: Icon alternative text for the host.
         required: false
         type: str
-        default: none
     comment:
         description: Comment for the host.
         required: false
         type: str
-        default: none
     is_activated:
         description: Whether the host is activated.
         required: false
         type: bool
-        default: none
     categories:
         description: Categories associated with the host.
         required: false
         type: list
-        default: none
     groups:
         description: Groups associated with the host.
         required: false
         type: list
-        default: none
     templates:
         description: Templates associated with the host.
         required: false
         type: list
-        default: none
     macros:
         description: Macros associated with the host.
         required: false
         type: list
-        default: none
 extends_documentation_fragment:
     - parnoud.centreon.base_options
 '''
 
 EXAMPLES = r'''
+---
 - name: Create host configuration
     parnoud.centreon.create_host_configuration:
         hostname: centreon.com/centreon/api/latest
@@ -257,6 +217,7 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+---
 object:
     description: 0 to indicate delete
     returned: success
@@ -409,8 +370,8 @@ def main():
     argument_spec = base_argument_spec()
     argument_spec.update(
         monitoring_server_id=dict(type='int', required=True),
-        name=dict(type='str', default=None, required=True),
-        address=dict(type='str', default=None, required=True),
+        name=dict(type='str', required=True),
+        address=dict(type='str', required=True),
         alias=dict(type='str', default=None),
         snmp_community=dict(type='str', default=None),
         snmp_version=dict(type='str', choices=['1', '2c', '3'], default=None),
