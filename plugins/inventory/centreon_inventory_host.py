@@ -128,11 +128,17 @@ class InventoryModule(BaseInventoryPlugin):
         validate_certs = self.get_option('validate_certs') or os.getenv('CENTREON_VALIDATE_CERTS')
         timeout = self.get_option('timeout') or os.getenv('CENTREON_TIMEOUT')
         search_criteria = self.get_option('search') or None
+
+        if token == '':
+            token = None
+        if username == '':
+            username = None
+        if password == '':
+            password = None
         filter_criteria = None
         if search_criteria:
             filter_criteria = {}
             filter_criteria['search'] = json.dumps(search_criteria)
-            print(filter_criteria)
         try:
             api = CentreonAPI(hostname=hostname,
                               token=token,
