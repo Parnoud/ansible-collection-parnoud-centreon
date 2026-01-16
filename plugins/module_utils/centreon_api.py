@@ -74,7 +74,7 @@ class CentreonAPI:
     def _get_all_paginated(self,
                            method: str,
                            endpoint: str,
-                           params: dict = None) -> dict:
+                           params = None) -> dict:
         """Return all data from a paginated endpoint."""
         all_results = []
         page = 1
