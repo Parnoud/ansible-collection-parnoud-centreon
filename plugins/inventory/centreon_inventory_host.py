@@ -125,7 +125,7 @@ class InventoryModule(BaseInventoryPlugin):
         token = self.get_option('token') or os.getenv('CENTREON_TOKEN')
         username = self.get_option('username') or os.getenv('CENTREON_USERNAME')
         password = self.get_option('password') or os.getenv('CENTREON_PASSWORD')
-        validate_certs = self.get_option('validate_certs') or os.getenv('CENTREON_VALIDATE_CERTS')
+        validate_certs = self.get_option('validate_certs') or os.getenv('CENTREON_VALIDATE_CERTS') or False
         timeout = self.get_option('timeout') or os.getenv('CENTREON_TIMEOUT')
         search_criteria = self.get_option('search') or None
 
