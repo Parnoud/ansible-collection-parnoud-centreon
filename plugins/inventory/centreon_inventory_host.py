@@ -121,12 +121,12 @@ class InventoryModule(BaseInventoryPlugin):
         self.config = None
 
     def _get_data(self):
-        hostname = self.get_option('hostname') or os.getenv('CENTREON_HOSTNAME') if "hostname" in self.config else None
-        token = self.get_options('token') or os.getenv('CENTREON_TOKEN') if "token" in self.config else None
-        username = self.get_option('username') or os.getenv('CENTREON_USERNAME') if "username" in self.config else None
-        password = self.get_option('password') or os.getenv('CENTREON_PASSWORD') if "password" in self.config else None
-        validate_certs = self.get_option('validate_certs') or os.getenv('CENTREON_VALIDATE_CERTS') if "validate_certs" in self.config else None
-        timeout = self.get_option('timeout') or os.getenv('CENTREON_TIMEOUT') if "timeout" in self.config else None
+        hostname = self.get_option('hostname') or os.getenv('CENTREON_HOSTNAME')
+        token = self.get_options('token') or os.getenv('CENTREON_TOKEN')
+        username = self.get_option('username') or os.getenv('CENTREON_USERNAME')
+        password = self.get_option('password') or os.getenv('CENTREON_PASSWORD')
+        validate_certs = self.get_option('validate_certs') or os.getenv('CENTREON_VALIDATE_CERTS')
+        timeout = self.get_option('timeout') or os.getenv('CENTREON_TIMEOUT')
         search_criteria = self.get_option('search') or None
         filter_criteria = None
         if search_criteria:
