@@ -122,7 +122,7 @@ class InventoryModule(BaseInventoryPlugin):
 
     def _get_data(self):
         hostname = self.get_option('hostname') or os.getenv('CENTREON_HOSTNAME')
-        token = self.get_options('token') or os.getenv('CENTREON_TOKEN')
+        token = self.get_option('token') or os.getenv('CENTREON_TOKEN')
         username = self.get_option('username') or os.getenv('CENTREON_USERNAME')
         password = self.get_option('password') or os.getenv('CENTREON_PASSWORD')
         validate_certs = self.get_option('validate_certs') or os.getenv('CENTREON_VALIDATE_CERTS')
