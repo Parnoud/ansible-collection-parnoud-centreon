@@ -1,0 +1,8 @@
+ancestor: null
+releases:
+  1.1.1:
+    changes:
+      doc_changes:
+      - Create examples for manage_host
+      - Update return for manage_host
+    release_date: '2026-01-16'

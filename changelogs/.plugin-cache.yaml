@@ -1,0 +1,33 @@
+objects:
+  role: {}
+plugins:
+  become: {}
+  cache: {}
+  callback: {}
+  cliconf: {}
+  connection: {}
+  filter: {}
+  httpapi: {}
+  inventory:
+    centreon_inventory_host:
+      description: Centreon host inventory source
+      name: centreon_inventory_host
+      version_added: null
+  lookup: {}
+  module:
+    manage_host:
+      description: Manage host in Centreon via API v2
+      name: manage_host
+      namespace: ''
+      version_added: null
+    manage_host_groups:
+      description: Create a host in Centreon via API v2
+      name: manage_host_groups
+      namespace: ''
+      version_added: null
+  netconf: {}
+  shell: {}
+  strategy: {}
+  test: {}
+  vars: {}
+version: 1.1.1
