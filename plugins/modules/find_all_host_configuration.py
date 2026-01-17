@@ -21,20 +21,21 @@ options:
         description: search criteria for fetching hosts (list or dict).
         type: raw
         required: false
-        default: none
+        default: null
 extends_documentation_fragment:
     - parnoud.centreon.base_options
 '''
 
 EXAMPLES = r'''
+---
 - name: Search all host
-    parnoud.centreon.find_all_host_configuration:
+  parnoud.centreon.find_all_host_configuration:
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
 
 - name: Search all host who start with test
-    parnoud.centreon.find_all_host_configuration:
+  parnoud.centreon.find_all_host_configuration:
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
@@ -43,7 +44,7 @@ EXAMPLES = r'''
                 "$rg": "^test"
 
 - name: Search all host who name like test or tst
-    parnoud.centreon.find_all_host_configuration:
+  parnoud.centreon.find_all_host_configuration:
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
@@ -56,11 +57,57 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-host_id:
-    description: 0 to indicate delete
+---
+result:
+    description: List host found
     returned: success
-    type: int
-    sample : 0
+    type: list
+    sample :
+        [
+            {
+            "id": 1,
+            "name": "Centreon-Server",
+            "alias": "",
+            "address": "127.0.0.1",
+            "monitoring_server": {
+                "id": 1,
+                "name": "Central"
+            },
+            "templates": [
+                {
+                "id": 2,
+                "name": "generic-host"
+                }
+            ],
+            "normal_check_interval": 5,
+            "retry_check_interval": 1,
+            "notification_timeperiod": {
+                "id": 1,
+                "name": "24x7"
+            },
+            "check_timeperiod": {
+                "id": 1,
+                "name": "24x7"
+            },
+            "severity": {
+                "id": 1,
+                "name": "Priority 1"
+            },
+            "categories": [
+                {
+                "id": 1,
+                "name": "host-category-name"
+                }
+            ],
+            "groups": [
+                {
+                "id": 1,
+                "name": "host-group-name"
+                }
+            ],
+            "is_activated": true
+            }
+        ]
 '''
 
 import json
@@ -102,10 +149,8 @@ def main():
         supports_check_mode=True
     )
     status, result = find_all_host_configuration_with_search(module)
-    if status == 0:
+    if status >= 0:
         module.exit_json(skipped=True, result=result)
-    elif status >= 1:
-        module.exit_json(succes=True, result=result)
     else:
         module.fail_json(result=0)
 

@@ -204,25 +204,30 @@ options:
         description: Categories associated with the host.
         required: false
         type: list
+        elements: int
     groups:
         description: Groups associated with the host.
         required: false
         type: list
+        elements: int
     templates:
         description: Templates associated with the host.
         required: false
         type: list
+        elements: int
     macros:
         description: Macros associated with the host.
         required: false
         type: list
+        elements: dict
 extends_documentation_fragment:
     - parnoud.centreon.base_options
 '''
 
 EXAMPLES = r'''
+---
 - name: Create host
-    parnoud.centreon.manage_host:
+  parnoud.centreon.manage_host:
     state: create
     hostname: centreon.com/centreon/api/latest
     username: user
@@ -232,7 +237,7 @@ EXAMPLES = r'''
     address: 127.0.0.1
 
 - name: Update host
-    parnoud.centreon.manage_host:
+  parnoud.centreon.manage_host:
     state: replace
     hostname: centreon.com/centreon/api/latest
     username: user
@@ -244,7 +249,7 @@ EXAMPLES = r'''
         - test_update
 
 - name: Update host
-    parnoud.centreon.manage_host:
+  parnoud.centreon.manage_host:
     state: update
     hostname: centreon.com/centreon/api/latest
     username: user
@@ -256,7 +261,7 @@ EXAMPLES = r'''
         - test_update
 
 - name: Delete the host
-    parnoud.centreon.manage_host:
+  parnoud.centreon.manage_host:
     state: delete
     hostname: centreon.com/centreon/api/latest
     username: user
@@ -265,6 +270,7 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+---
 Create:
     description:
         - Create host
@@ -708,10 +714,10 @@ def main():
         icon_alternative=dict(type='str', default=None),
         comment=dict(type='str', default=None),
         is_activated=dict(type='bool', default=None),
-        categories=dict(type='list', default=None),
-        groups=dict(type='list', default=None),
-        templates=dict(type='list', default=None),
-        macros=dict(type='list', default=None),
+        categories=dict(type='list', elements='int', default=None),
+        groups=dict(type='list', elements='int', default=None),
+        templates=dict(type='list', elements='int', default=None),
+        macros=dict(type='list', elements='dict', default=None),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,

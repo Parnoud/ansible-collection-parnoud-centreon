@@ -26,8 +26,9 @@ extends_documentation_fragment:
 '''
 
 EXAMPLES = r'''
+---
 - name: Delete host configuration by id
-    parnoud.centreon.delete_host_configuration:
+  parnoud.centreon.delete_host_configuration:
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
@@ -35,6 +36,7 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+---
 host_id:
     description: 0 to indicate delete
     returned: success

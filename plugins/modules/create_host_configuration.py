@@ -188,18 +188,22 @@ options:
         description: Categories associated with the host.
         required: false
         type: list
+        elements: int
     groups:
         description: Groups associated with the host.
         required: false
         type: list
+        elements: int
     templates:
         description: Templates associated with the host.
         required: false
         type: list
+        elements: int
     macros:
         description: Macros associated with the host.
         required: false
         type: list
+        elements: dict
 extends_documentation_fragment:
     - parnoud.centreon.base_options
 '''
@@ -207,13 +211,13 @@ extends_documentation_fragment:
 EXAMPLES = r'''
 ---
 - name: Create host configuration
-    parnoud.centreon.create_host_configuration:
-        hostname: centreon.com/centreon/api/latest
-        username: user
-        password: pass
-        monitoring_server_id: 1
-        name: my-host
-        address: 127.0.0.1
+  parnoud.centreon.create_host_configuration:
+    hostname: centreon.com/centreon/api/latest
+    username: user
+    password: pass
+    monitoring_server_id: 1
+    name: my-host
+    address: 127.0.0.1
 '''
 
 RETURN = r'''
@@ -223,77 +227,77 @@ object:
     returned: success
     type: dict
     sample :
-{
-    "monitoring_server_id": 1,
-    "name": "generic-active-host",
-    "address": "127.0.0.1",
-    "alias": "generic-active-host",
-    "snmp_community": "string",
-    "snmp_version": "2c",
-    "geo_coords": "48.10,12.5",
-    "timezone_id": 1,
-    "severity_id": 1,
-    "check_command_id": 1,
-    "check_command_args": [
-        "0",
-        "OK"
-    ],
-    "check_timeperiod_id": 1,
-    "max_check_attempts": 0,
-    "normal_check_interval": 0,
-    "retry_check_interval": 0,
-    "active_check_enabled": 0,
-    "passive_check_enabled": 0,
-    "notification_enabled": 0,
-    "notification_options": 5,
-    "notification_interval": 0,
-    "notification_timeperiod_id": 1,
-    "add_inherited_contact_group": true,
-    "add_inherited_contact": true,
-    "first_notification_delay": 0,
-    "recovery_notification_delay": 0,
-    "acknowledgement_timeout": 0,
-    "freshness_checked": 0,
-    "freshness_threshold": 0,
-    "flap_detection_enabled": 0,
-    "low_flap_threshold": 0,
-    "high_flap_threshold": 0,
-    "event_handler_enabled": 0,
-    "event_handler_command_id": 1,
-    "event_handler_command_args": [
-        "0",
-        "OK"
-    ],
-    "note_url": "string",
-    "note": "string",
-    "action_url": "string",
-    "icon_id": 1,
-    "icon_alternative": "string",
-    "comment": "string",
-    "is_activated": true,
-    "categories": [
-        1,
-        15,
-        8
-    ],
-    "groups": [
-        1,
-        15,
-        8
-    ],
-    "templates": [
-        3,
-        12
-    ],
-    "macros": [
         {
-            "name": "MacroName",
-            "value": "macroValue",
-            "is_password": false,
-            "description": "Some text to describe the macro"
+            "monitoring_server_id": 1,
+            "name": "generic-active-host",
+            "address": "127.0.0.1",
+            "alias": "generic-active-host",
+            "snmp_community": "string",
+            "snmp_version": "2c",
+            "geo_coords": "48.10,12.5",
+            "timezone_id": 1,
+            "severity_id": 1,
+            "check_command_id": 1,
+            "check_command_args": [
+                "0",
+                "OK"
+            ],
+            "check_timeperiod_id": 1,
+            "max_check_attempts": 0,
+            "normal_check_interval": 0,
+            "retry_check_interval": 0,
+            "active_check_enabled": 0,
+            "passive_check_enabled": 0,
+            "notification_enabled": 0,
+            "notification_options": 5,
+            "notification_interval": 0,
+            "notification_timeperiod_id": 1,
+            "add_inherited_contact_group": true,
+            "add_inherited_contact": true,
+            "first_notification_delay": 0,
+            "recovery_notification_delay": 0,
+            "acknowledgement_timeout": 0,
+            "freshness_checked": 0,
+            "freshness_threshold": 0,
+            "flap_detection_enabled": 0,
+            "low_flap_threshold": 0,
+            "high_flap_threshold": 0,
+            "event_handler_enabled": 0,
+            "event_handler_command_id": 1,
+            "event_handler_command_args": [
+                "0",
+                "OK"
+            ],
+            "note_url": "string",
+            "note": "string",
+            "action_url": "string",
+            "icon_id": 1,
+            "icon_alternative": "string",
+            "comment": "string",
+            "is_activated": true,
+            "categories": [
+                1,
+                15,
+                8
+            ],
+            "groups": [
+                1,
+                15,
+                8
+            ],
+            "templates": [
+                3,
+                12
+            ],
+            "macros": [
+                {
+                    "name": "MacroName",
+                    "value": "macroValue",
+                    "is_password": false,
+                    "description": "Some text to describe the macro"
+                }
+            ]
         }
-    ]
-}
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -409,10 +413,10 @@ def main():
         icon_alternative=dict(type='str', default=None),
         comment=dict(type='str', default=None),
         is_activated=dict(type='bool', default=None),
-        categories=dict(type='list', default=None),
-        groups=dict(type='list', default=None),
-        templates=dict(type='list', default=None),
-        macros=dict(type='list', default=None),
+        categories=dict(type='list', elements='int', default=None),
+        groups=dict(type='list', elements='int', default=None),
+        templates=dict(type='list', elements='int', default=None),
+        macros=dict(type='list', elements='dict', default=None)
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
