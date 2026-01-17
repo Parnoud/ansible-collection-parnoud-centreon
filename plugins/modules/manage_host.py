@@ -463,11 +463,11 @@ from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api impo
 from ansible_collections.parnoud.centreon.plugins.module_utils.host import (
     delete_host_configuration,
     partially_update_host_configuration,
-    find_all_host_configuration,
+    find_all_host_configurations,
     create_host_configuration
 )
-from ansible_collections.parnoud.centreon.plugins.module_utils.host_group import list_all_host_groups_configuration
-from ansible_collections.parnoud.centreon.plugins.module_utils.host_template import find_all_host_template_configuration
+from ansible_collections.parnoud.centreon.plugins.module_utils.host_group import list_all_host_groups
+from ansible_collections.parnoud.centreon.plugins.module_utils.host_template import find_all_host_template_configurations
 from ansible_collections.parnoud.centreon.plugins.module_utils.argument_spec import base_argument_spec
 
 
@@ -538,7 +538,7 @@ def manage_host(module):
             if isinstance(val, str):
                 filter_criteria = {}
                 filter_criteria['search'] = json.dumps({'name': val})
-                host_groups = list_all_host_groups_configuration(api, params=filter_criteria)
+                host_groups = list_all_host_groups(api, params=filter_criteria)
                 if len(host_groups) != 1:
                     return False, f"Host group {val} multiple or not found for update."
                 host_group_id = host_groups[0]['id']
@@ -553,7 +553,7 @@ def manage_host(module):
             if isinstance(val, str):
                 filter_criteria = {}
                 filter_criteria['search'] = json.dumps({'name': val})
-                hosts_templates = find_all_host_template_configuration(api, params=filter_criteria)
+                hosts_templates = find_all_host_template_configurations(api, params=filter_criteria)
                 if len(hosts_templates) != 1:
                     return False, f"Host template {val} multiple or not found for update."
                 host_template_id = hosts_templates[0]['id']
@@ -582,7 +582,7 @@ def manage_host(module):
         elif module.params['name']:
             filter_criteria = {}
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
-            hosts = find_all_host_configuration(api, params=filter_criteria)
+            hosts = find_all_host_configurations(api, params=filter_criteria)
             if len(hosts) != 1:
                 return False, f"Host {module.params['name']} multiple or not found for update. {filter_criteria}"
             host_id = hosts[0]['id']
@@ -591,7 +591,7 @@ def manage_host(module):
             if partially_update_host_configuration(api, host_id, host_data):
                 filter_criteria = {}
                 filter_criteria['search'] = json.dumps({'id': host_id})
-                return True, find_all_host_configuration(api, params=filter_criteria)
+                return True, find_all_host_configurations(api, params=filter_criteria)
         else:
             return False, "Host ID or name must be provided for update operation."
 
@@ -611,7 +611,7 @@ def manage_host(module):
         elif module.params['name']:
             filter_criteria = {}
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
-            hosts = find_all_host_configuration(api, params=filter_criteria)
+            hosts = find_all_host_configurations(api, params=filter_criteria)
             if len(hosts) != 1:
                 return False, f"Host {module.params['name']} multiple or not found for update. {filter_criteria}"
             host_id = hosts[0]['id']
@@ -640,7 +640,7 @@ def manage_host(module):
             if partially_update_host_configuration(api, host_id, current_host_data):
                 filter_criteria = {}
                 filter_criteria['search'] = json.dumps({'id': host_id})
-                return True, find_all_host_configuration(api, params=filter_criteria)
+                return True, find_all_host_configurations(api, params=filter_criteria)
         else:
             return False, "Host ID or name must be provided for update operation."
 
@@ -653,7 +653,7 @@ def manage_host(module):
             filter_criteria = {}
             filter_criteria['search'] = json.dumps({'name': module.params['name']})
 
-            hosts = find_all_host_configuration(api, params=filter_criteria)
+            hosts = find_all_host_configurations(api, params=filter_criteria)
             if len(hosts) == 0:
                 return True, hosts
             elif len(hosts) >= 2:

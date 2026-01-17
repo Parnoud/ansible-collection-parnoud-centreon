@@ -11,8 +11,8 @@
 
 DOCUMENTATION = r'''
 ---
-module: find_all_host_configuration
-short_description: Find all host configuration
+module: find_all_host_configurations
+short_description: Return all host configurations.
 description:
     - Find all host configuration with search options
 author: "Pierre ARNOUD (@parnoud)"
@@ -29,13 +29,13 @@ extends_documentation_fragment:
 EXAMPLES = r'''
 ---
 - name: Search all host
-  parnoud.centreon.find_all_host_configuration:
+  parnoud.centreon.find_all_host_configurations:
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
 
-- name: Search all host who start with test
-  parnoud.centreon.find_all_host_configuration:
+- name: Search all host who name start with test
+  parnoud.centreon.find_all_host_configurations:
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
@@ -44,7 +44,7 @@ EXAMPLES = r'''
                 "$rg": "^test"
 
 - name: Search all host who name like test or tst
-  parnoud.centreon.find_all_host_configuration:
+  parnoud.centreon.find_all_host_configurations:
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
@@ -115,10 +115,10 @@ import json
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
 from ansible_collections.parnoud.centreon.plugins.module_utils.argument_spec import base_argument_spec
-from ansible_collections.parnoud.centreon.plugins.module_utils.host import find_all_host_configuration
+from ansible_collections.parnoud.centreon.plugins.module_utils.host import find_all_host_configurations
 
 
-def find_all_host_configuration_with_search(module):
+def find_all_host_configurations_with_search(module):
     """entry point for module execution"""
 
     api = CentreonAPI(
@@ -135,7 +135,7 @@ def find_all_host_configuration_with_search(module):
         filter_criteria = {}
         filter_criteria['search'] = json.dumps(search_criteria)
 
-    result = find_all_host_configuration(api, params=filter_criteria)
+    result = find_all_host_configurations(api, params=filter_criteria)
     return len(result), result
 
 
@@ -148,7 +148,7 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True
     )
-    status, result = find_all_host_configuration_with_search(module)
+    status, result = find_all_host_configurations_with_search(module)
     if status >= 0:
         module.exit_json(skipped=True, result=result)
     else:

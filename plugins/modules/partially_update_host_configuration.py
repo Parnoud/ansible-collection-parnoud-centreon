@@ -11,105 +11,128 @@
 
 DOCUMENTATION = r'''
 ---
-module: create_host_configuration
-short_description: Create a host configuration
+module: partially_update_host_configuration
+short_description: Partially update a host configuration.
 description:
-    - Create host configuration with givens parameters
+    - Update a host configuration with givens parameters by host_id
 author: "Pierre ARNOUD (@parnoud)"
 options:
-    monitoring_server_id:
-        description: ID of the monitoring server where the host will be created.
+    host_id:
+        description: host id
         required: true
         type: int
+    monitoring_server_id:
+        description: ID of the monitoring server where the host will be created.
+        type: int
+        default: null
     name:
         description: Host name.
-        required: true
         type: str
+        default: null
     address:
         description: Host address.
-        required: true
         type: str
+        default: null
     alias:
         description: Host alias.
         required: false
         type: str
+        default: null
     snmp_community:
         description: SNMP community string.
         required: false
         type: str
+        default: null
     snmp_version:
         description: SNMP version.
         required: false
         type: str
         choices: ['1', '2c', '3']
+        default: null
     geo_coords:
         description: Geographical coordinates of the host.
         required: false
         type: str
+        default: null
     timezone_id:
         description: Timezone ID for the host.
         required: false
         type: int
+        default: null
     severity_id:
         description: Severity ID for the host.
         required: false
         type: int
+        default: null
     check_command_id:
         description: Check command ID for the host.
         required: false
         type: int
+        default: null
     check_command_args:
         description: Arguments for the check command.
         required: false
         type: dict
+        default: null
     check_timeperiod_id:
         description: Check time period ID for the host.
         required: false
         type: int
+        default: null
     max_check_attempts:
         description: Maximum number of check attempts.
         required: false
         type: int
+        default: null
     normal_check_interval:
         description: Normal check interval.
         required: false
         type: int
+        default: null
     retry_check_interval:
         description: Retry check interval.
         required: false
         type: int
+        default: null
     active_check_enabled:
         description: Whether active checks are enabled.
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     passive_check_enabled:
         description: Whether passive checks are enabled.
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     notifications_enabled:
         description: Whether notifications are enabled.
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     notification_options:
         description: Notification options.
         required: false
         type: int
         choices: [0, 1, 2, 4, 8, 16]
+        default: null
     notification_interval:
         description: Notification interval.
         required: false
         type: int
+        default: null
     notification_timeperiod_id:
         description: Notification time period ID.
         required: false
         type: int
+        default: null
     add_inherited_contact_group:
         description: Whether to add inherited contact groups.
         required: false
         type: bool
+        default: null
     add_inherited_contact:
         description: Whether to add inherited contacts.
         required: false
@@ -118,195 +141,144 @@ options:
         description: First notification delay.
         required: false
         type: int
+        default: null
     recovery_notification_delay:
         description: Recovery notification delay.
         required: false
         type: int
+        default: null
     acknowledgement_timeout:
         description: Acknowledgement timeout.
         required: false
         type: int
+        default: null
     freshness_threshold:
         description: Freshness threshold.
         required: false
         type: int
+        default: null
     flap_detection_enabled:
         description: Whether flap detection is enabled.
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     low_flap_threshold:
         description: Low flap threshold.
         required: false
         type: int
+        default: null
     high_flap_threshold:
         description: High flap threshold.
         required: false
         type: int
+        default: null
     event_handler_enabled:
         description: Whether event handler is enabled.
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     event_handler_command_id:
         description: Event handler command ID.
         required: false
         type: int
+        default: null
     event_handler_command_args:
         description: Arguments for the event handler command.
         required: false
         type: dict
+        default: null
     note_url:
         description: Note URL for the host.
         required: false
         type: str
+        default: null
     note:
         description: Note for the host.
         required: false
         type: str
+        default: null
     action_url:
         description: Action URL for the host.
         required: false
         type: str
+        default: null
     icon_id:
         description: Icon ID for the host.
         required: false
         type: int
+        default: null
     icon_alternative:
         description: Icon alternative text for the host.
         required: false
         type: str
+        default: null
     comment:
         description: Comment for the host.
         required: false
         type: str
+        default: null
     is_activated:
         description: Whether the host is activated.
         required: false
         type: bool
+        default: null
     categories:
         description: Categories associated with the host.
         required: false
         type: list
         elements: int
+        default: null
     groups:
         description: Groups associated with the host.
         required: false
         type: list
         elements: int
+        default: null
     templates:
         description: Templates associated with the host.
         required: false
         type: list
         elements: int
+        default: null
     macros:
         description: Macros associated with the host.
         required: false
         type: list
         elements: dict
+        default: null
 extends_documentation_fragment:
     - parnoud.centreon.base_options
 '''
 
 EXAMPLES = r'''
 ---
-- name: Create host configuration
-  parnoud.centreon.create_host_configuration:
-    hostname: centreon.com/centreon/api/latest
-    username: user
-    password: pass
-    monitoring_server_id: 1
-    name: my-host
-    address: 127.0.0.1
+- name: Update host configuration by id
+  parnoud.centreon.delete_host_configuration:
+        hostname: centreon.com/centreon/api/latest
+        username: user
+        password: pass
+        host_id: 32
+        name: new-host-name
 '''
 
 RETURN = r'''
 ---
-object:
+host_id:
     description: 0 to indicate delete
     returned: success
-    type: dict
-    sample :
-        {
-            "monitoring_server_id": 1,
-            "name": "generic-active-host",
-            "address": "127.0.0.1",
-            "alias": "generic-active-host",
-            "snmp_community": "string",
-            "snmp_version": "2c",
-            "geo_coords": "48.10,12.5",
-            "timezone_id": 1,
-            "severity_id": 1,
-            "check_command_id": 1,
-            "check_command_args": [
-                "0",
-                "OK"
-            ],
-            "check_timeperiod_id": 1,
-            "max_check_attempts": 0,
-            "normal_check_interval": 0,
-            "retry_check_interval": 0,
-            "active_check_enabled": 0,
-            "passive_check_enabled": 0,
-            "notification_enabled": 0,
-            "notification_options": 5,
-            "notification_interval": 0,
-            "notification_timeperiod_id": 1,
-            "add_inherited_contact_group": true,
-            "add_inherited_contact": true,
-            "first_notification_delay": 0,
-            "recovery_notification_delay": 0,
-            "acknowledgement_timeout": 0,
-            "freshness_checked": 0,
-            "freshness_threshold": 0,
-            "flap_detection_enabled": 0,
-            "low_flap_threshold": 0,
-            "high_flap_threshold": 0,
-            "event_handler_enabled": 0,
-            "event_handler_command_id": 1,
-            "event_handler_command_args": [
-                "0",
-                "OK"
-            ],
-            "note_url": "string",
-            "note": "string",
-            "action_url": "string",
-            "icon_id": 1,
-            "icon_alternative": "string",
-            "comment": "string",
-            "is_activated": true,
-            "categories": [
-                1,
-                15,
-                8
-            ],
-            "groups": [
-                1,
-                15,
-                8
-            ],
-            "templates": [
-                3,
-                12
-            ],
-            "macros": [
-                {
-                    "name": "MacroName",
-                    "value": "macroValue",
-                    "is_password": false,
-                    "description": "Some text to describe the macro"
-                }
-            ]
-        }
+    type: int
+    sample : 0
 '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
 from ansible_collections.parnoud.centreon.plugins.module_utils.argument_spec import base_argument_spec
-from ansible_collections.parnoud.centreon.plugins.module_utils.host import create_host_configuration
+from ansible_collections.parnoud.centreon.plugins.module_utils.host import partially_update_host_configuration
 
 
-def create_host_configuration_with_parameters(module):
+def partially_update_host_configuration_with_parameters(module):
     """entry point for module execution"""
 
     api = CentreonAPI(
@@ -366,16 +338,19 @@ def create_host_configuration_with_parameters(module):
 
     host_data = {k: v for k, v in host_data.items() if v is not None}
 
-    result = create_host_configuration(api, host_data=host_data)
-    return True, result
+    if partially_update_host_configuration(api, host_id=module.params.get('host_id'), host_data=host_data):
+        return True, 0
+    else:
+        return False, module.params.get('host_id')
 
 
 def main():
     argument_spec = base_argument_spec()
     argument_spec.update(
-        monitoring_server_id=dict(type='int', required=True),
-        name=dict(type='str', required=True),
-        address=dict(type='str', required=True),
+        host_id=dict(type='int', required=True),
+        monitoring_server_id=dict(type='int', default=None),
+        name=dict(type='str', default=None),
+        address=dict(type='str', default=None),
         alias=dict(type='str', default=None),
         snmp_community=dict(type='str', default=None),
         snmp_version=dict(type='str', choices=['1', '2c', '3'], default=None),
@@ -422,7 +397,7 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True
     )
-    status, object = create_host_configuration_with_parameters(module)
+    status, object = partially_update_host_configuration_with_parameters(module)
     if status:
         module.exit_json(succes=True, object=object)
     else:

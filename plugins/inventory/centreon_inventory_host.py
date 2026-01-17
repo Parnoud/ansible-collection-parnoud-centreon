@@ -109,7 +109,7 @@ import os
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ansible.errors import AnsibleError
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
-from ansible_collections.parnoud.centreon.plugins.module_utils.host import find_all_host_configuration
+from ansible_collections.parnoud.centreon.plugins.module_utils.host import find_all_host_configurations
 
 
 class InventoryModule(BaseInventoryPlugin):
@@ -147,7 +147,7 @@ class InventoryModule(BaseInventoryPlugin):
                               validate_certs=validate_certs,
                               timeout=timeout)
 
-            result = find_all_host_configuration(api, params=filter_criteria)
+            result = find_all_host_configurations(api, params=filter_criteria)
             if len(result) >= 1:
                 return result
             else:

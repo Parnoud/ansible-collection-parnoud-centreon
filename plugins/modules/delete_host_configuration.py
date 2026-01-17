@@ -12,7 +12,7 @@
 DOCUMENTATION = r'''
 ---
 module: delete_host_configuration
-short_description: Delete a host configuration by id
+short_description: Delete a host configuration
 description:
     - Delete the host configuration with the given host_id
 author: "Pierre ARNOUD (@parnoud)"
@@ -61,13 +61,11 @@ def delete_host_by_id(module):
         validate_certs=module.params.get('validate_certs'),
         timeout=module.params.get('timeout'),
     )
-    host_data = {
-        'host_id': module.params.get('host_id'),
-    }
-    if delete_host_configuration(api, host_data['host_id']):
+
+    if delete_host_configuration(api, host_id=module.params.get('host_id')):
         return True, 0
     else:
-        return False, host_data['host_id']
+        return False, module.params.get('host_id')
 
 
 def main():

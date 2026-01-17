@@ -9,6 +9,6 @@
 #
 
 
-def find_all_host_template_configuration(CentreonAPI_obj, params=None):
+def find_all_host_template_configurations(CentreonAPI_obj, params=None):
     """Return all host template configurations."""
     return CentreonAPI_obj._get_all_paginated('GET', 'configuration/hosts/templates', params=params)

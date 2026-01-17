@@ -11,7 +11,7 @@
 import json
 
 
-def list_all_host_groups_configuration(CentreonAPI_obj, params=None):
+def list_all_host_groups(CentreonAPI_obj, params=None):
     """Return all host group configurations."""
     return CentreonAPI_obj._get_all_paginated('GET', 'configuration/hosts/groups', params=params)
 
