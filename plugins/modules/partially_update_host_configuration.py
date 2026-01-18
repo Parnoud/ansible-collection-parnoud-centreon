@@ -239,7 +239,7 @@ options:
         elements: int
         default: null
     templates:
-        description: Define the parent host template IDs that should be associated with this host. The order of the IDs determines the inheritance priority order.
+        description: Define the parent host template IDs that should be associated with this host.
         required: false
         type: list
         elements: int
@@ -360,7 +360,7 @@ def main():
         timezone_id=dict(type='int', default=None),
         severity_id=dict(type='int', default=None),
         check_command_id=dict(type='int', default=None),
-        check_command_args=dict(type='dict', default=None),
+        check_command_args=dict(type='list', elements='str', default=None),
         check_timeperiod_id=dict(type='int', default=None),
         max_check_attempts=dict(type='int', default=None),
         normal_check_interval=dict(type='int', default=None),
@@ -382,7 +382,7 @@ def main():
         high_flap_threshold=dict(type='int', default=None),
         event_handler_enabled=dict(type='int', choices=[0, 1, 2], default=None),
         event_handler_command_id=dict(type='int', default=None),
-        event_handler_command_args=dict(type='dict', default=None),
+        event_handler_command_args=dict(type='list', elements='str', default=None),
         note_url=dict(type='str', default=None),
         note=dict(type='str', default=None),
         action_url=dict(type='str', default=None),
