@@ -114,7 +114,6 @@ def manage_host_groups(module):
 
     hostgroup_data = {k: v for k, v in hostgroup_data.items() if v is not None}
 
-
     if module.params['state'] == 'create':
 
         result = add_host_group(api, hostgroup_data=hostgroup_data)
@@ -137,7 +136,7 @@ def manage_host_groups(module):
             if len(hosts_group) != 1:
                 return False, f"Host group {module.params['name']} multiple or not found for update."
             hostgroup_id = hosts_group[0]['id']
-        
+
         current_hostgroup_data = get_host_group(api, hostgroup_id=hostgroup_id)
 
         if hostgroup_id:
@@ -164,7 +163,7 @@ def manage_host_groups(module):
             if len(hosts_group) != 1:
                 return False, f"Host group {module.params['name']} multiple or not found for update."
             hostgroup_id = hosts_group[0]['id']
-        
+
         current_hostgroup_data = get_host_group(api, hostgroup_id=hostgroup_id)
 
         current_hostgroup_data["hosts"] = [item["id"] for item in current_hostgroup_data["hosts"]]
