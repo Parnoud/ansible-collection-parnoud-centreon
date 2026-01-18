@@ -12,13 +12,13 @@
 DOCUMENTATION = r'''
 ---
 module: update_host_severity
-short_description: Update host sevirity configuration
+short_description: Update a host severity
 description:
     - Update host group sevirity with givens parameters
 author: "Pierre ARNOUD (@parnoud)"
 options:
     hostseverity_id:
-        description: hostseverity id
+        description: ID of existing host severity configuration
         required: True
         type: int
     name:

@@ -18,7 +18,7 @@ description:
 author: "Pierre ARNOUD (@parnoud)"
 options:
     hostseverity_id:
-        description: hostseverity id
+        description: ID of existing host severity configuration
         required: True
         type: int
 extends_documentation_fragment:

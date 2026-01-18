@@ -12,13 +12,13 @@
 DOCUMENTATION = r'''
 ---
 module: get_host_group
-short_description: Get an existing host group configuration
+short_description: Get an existing host group.
 description:
     - Get an existing host group with the given host_id
 author: "Pierre ARNOUD (@parnoud)"
 options:
     hostgroup_id:
-        description: hostgroup id
+        description: Host group ID
         required: true
         type: int
 extends_documentation_fragment:
@@ -27,7 +27,7 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 ---
-- name: Get an existing host group configuration
+- name: Get an existing host group.
   parnoud.centreon.get_host_group:
         hostname: centreon.com/centreon/api/latest
         username: user

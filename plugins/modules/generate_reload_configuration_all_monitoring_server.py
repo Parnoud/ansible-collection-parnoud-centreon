@@ -12,9 +12,9 @@
 DOCUMENTATION = r'''
 ---
 module: generate_reload_configuration_all_monitoring_server
-short_description: Generate, move and reload the configuration files for all monitoring servers
+short_description: Generate, move and reload the configuration files for all monitoring servers.
 description:
-    - Generate, move and reload the configuration files for all monitoring servers
+    - Generate, move and reload the configuration files for all monitoring servers.
 author: "Pierre ARNOUD (@parnoud)"
 extends_documentation_fragment:
     - parnoud.centreon.base_options

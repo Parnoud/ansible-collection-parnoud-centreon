@@ -18,7 +18,7 @@ description:
 author: "Pierre ARNOUD (@parnoud)"
 options:
     monitoring_server_id:
-        description: host id
+        description: ID of the monitoring server (poller)
         required: true
         type: int
 extends_documentation_fragment:

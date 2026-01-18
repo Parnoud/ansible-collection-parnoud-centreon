@@ -18,7 +18,7 @@ description:
 author: "Pierre ARNOUD (@parnoud)"
 options:
     hostgroup_id:
-        description: hostgroup id
+        description: Host group ID
         required: true
         type: int
 extends_documentation_fragment:

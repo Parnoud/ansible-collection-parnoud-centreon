@@ -12,7 +12,7 @@
 DOCUMENTATION = r'''
 ---
 module: list_all_host_severities
-short_description: List of all host severity configurations.
+short_description: List of all host severity configurations
 description:
     - List of all host severity configurations with search options
 author: "Pierre ARNOUD (@parnoud)"

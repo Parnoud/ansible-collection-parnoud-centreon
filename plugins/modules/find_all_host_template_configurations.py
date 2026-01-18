@@ -18,7 +18,7 @@ description:
 author: "Pierre ARNOUD (@parnoud)"
 options:
     search:
-        description: search criteria for fetching host templates (list or dict).
+        description: Retrieve only data matching the defined search value.
         type: raw
         required: false
         default: null

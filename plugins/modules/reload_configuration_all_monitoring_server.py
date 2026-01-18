@@ -12,7 +12,7 @@
 DOCUMENTATION = r'''
 ---
 module: reload_configuration_all_monitoring_server
-short_description: Reload the configuration files for all monitoring servers
+short_description: Reload the configuration files for all monitoring servers.
 description:
     - Reload the configuration files for all monitoring servers
 author: "Pierre ARNOUD (@parnoud)"

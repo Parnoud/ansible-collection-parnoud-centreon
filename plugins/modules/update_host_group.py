@@ -12,44 +12,44 @@
 DOCUMENTATION = r'''
 ---
 module: update_host_group
-short_description: Update host group configuration
+short_description: Update host group.
 description:
-    - Update host group configuration with givens parameters
+    - Update host group. with givens parameters
     - API Limitation, We are forced to send a hosts list (empty or not)
     - Default hosts list is empty so if you don't mention it it will wipe hosts associated with the host group
 author: "Pierre ARNOUD (@parnoud)"
 options:
     hostgroup_id:
-        description: hostgroup id
+        description: Host group ID
         required: true
         type: int
     name:
-        description: Name of the host group.
+        description: Host group name
         required: False
         type: str
         default: null
     alias:
-        description: Alias of the host.
+        description: Host group alias
         required: False
         type: str
         default: null
     icon_id:
-        description: Icon ID of the host.
+        description: Define the image ID that should be associated with this host group
         required: False
         type: int
         default: null
     geo_coords:
-        description: Geographical coordinates of the host.
+        description: Geographical coordinates use by Centreon Map module to position element on map
         required: False
         type: str
         default: null
     comment:
-        description: Comment for the host.
+        description: Comments on this host group
         required: False
         type: str
         default: null
     hosts:
-        description: Dictionary of hosts to be associated with the host group.
+        description: Hosts linked to this host group
         required: False
         type: list
         elements: int
