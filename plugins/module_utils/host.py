@@ -70,7 +70,7 @@ def create_host_configuration(api: CentreonAPI, host_data: dict):
 # MONITORINNG
 
 
-def list_all_host(api: CentreonAPI, params: dict = None):
+def list_all_host_monitoring(api: CentreonAPI, params: dict = None):
     """List all the hosts in real-time monitoring."""
     code, data = api._request('GET', 'monitoring/hosts', params=params)
     if code == 200:
@@ -81,7 +81,7 @@ def list_all_host(api: CentreonAPI, params: dict = None):
         raise Exception(f"Failed: {json.loads(data)['message']}")
 
 
-def get_host(api: CentreonAPI, host_id: int):
+def get_host_monitoring(api: CentreonAPI, host_id: int):
     """Get host configuration by ID."""
     code, data = api._request('GET', f'configuration/hosts/{host_id}')
     if code == 200:
@@ -94,7 +94,7 @@ def get_host(api: CentreonAPI, host_id: int):
         raise Exception(f"Failed: {json.loads(data)['message']}")
 
 
-def count_hosts_by_status(api: CentreonAPI, params: dict = None):
+def count_hosts_monitoring_by_status(api: CentreonAPI, params: dict = None):
     """Count hosts by their status (UP/DOWN/UNREACHABLE/PENDING)."""
     code, data = api._request('GET', 'monitoring/hosts/count', params=params)
     if code == 200:

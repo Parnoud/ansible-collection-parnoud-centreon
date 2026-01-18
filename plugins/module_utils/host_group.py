@@ -11,14 +11,17 @@
 import json
 
 
+# CONFIGURATION
+
+
 def list_all_host_groups(CentreonAPI_obj, params=None):
     """Return all host group configurations."""
     return CentreonAPI_obj._get_all_paginated('GET', 'configuration/hosts/groups', params=params)
 
 
-def add_host_group(CentreonAPI_obj, host_group_data):
+def add_host_group(CentreonAPI_obj, hostgroup_data):
     """Add a new host group configuration."""
-    code, data = CentreonAPI_obj._request('POST', 'configuration/hosts/groups', data=host_group_data)
+    code, data = CentreonAPI_obj._request('POST', 'configuration/hosts/groups', data=hostgroup_data)
     if code == 201:
         return json.loads(data)
     elif code == 400:
@@ -30,12 +33,12 @@ def add_host_group(CentreonAPI_obj, host_group_data):
     elif code == 409:
         raise Exception(f"Conflict: {json.loads(data)['message']}")
     else:
-        raise Exception(f"Failed code {code}: {json.loads(data)['message']} {host_group_data}")
+        raise Exception(f"Failed code {code}: {json.loads(data)['message']} {hostgroup_data}")
 
 
-def get_host_groups(CentreonAPI_obj, host_group_id: int):
+def get_host_group(CentreonAPI_obj, hostgroup_id: int):
     """Get an existing host group."""
-    code, data = CentreonAPI_obj._request('GET', f'configuration/hosts/groups/{host_group_id}')
+    code, data = CentreonAPI_obj._request('GET', f'configuration/hosts/groups/{hostgroup_id}')
     if code == 200:
         return json.loads(data)
     elif code == 403:
@@ -46,9 +49,9 @@ def get_host_groups(CentreonAPI_obj, host_group_id: int):
         raise Exception(f"Failed to get host group: {json.loads(data)['message']}")
 
 
-def delete_host_group(CentreonAPI_obj, host_group_id: int):
+def delete_host_group(CentreonAPI_obj, hostgroup_id: int):
     """Delete host group configuration by ID."""
-    code, data = CentreonAPI_obj._request('DELETE', f'configuration/hosts/groups/{host_group_id}')
+    code, data = CentreonAPI_obj._request('DELETE', f'configuration/hosts/groups/{hostgroup_id}')
     if code == 204:
         return True
     elif code == 403:
@@ -59,9 +62,9 @@ def delete_host_group(CentreonAPI_obj, host_group_id: int):
         raise Exception(f"Failed to delete host group: {json.loads(data)['message']}")
 
 
-def update_host_group(CentreonAPI_obj, host_group_id: int, host_group_data):
+def update_host_group(CentreonAPI_obj, hostgroup_id: int, hostgroup_data):
     """Update host group."""
-    code, data = CentreonAPI_obj._request('PUT', f'configuration/hosts/groups/{host_group_id}', data=host_group_data)
+    code, data = CentreonAPI_obj._request('PUT', f'configuration/hosts/groups/{hostgroup_id}', data=hostgroup_data)
     if code == 204:
         return True
     elif code == 400:
@@ -77,9 +80,9 @@ def update_host_group(CentreonAPI_obj, host_group_id: int, host_group_data):
         raise Exception(f"Failed to update host group: {json.loads(data)['message']}")
 
 
-def delete_multiple_host_groups(CentreonAPI_obj, host_group_ids: list):
+def delete_multiple_host_groups(CentreonAPI_obj, hostgroup_ids: list):
     """Delete multiple host groups by their IDs."""
-    code, data = CentreonAPI_obj._request('POST', 'configuration/hosts/groups/_delete', host_group_ids)
+    code, data = CentreonAPI_obj._request('POST', 'configuration/hosts/groups/_delete', hostgroup_ids)
     if code == 200:
         return json.loads(data)
     elif code == 401:
@@ -110,11 +113,14 @@ def duplicate_multiple_host_groups(CentreonAPI_obj, ids, nb_duplicates: int):
         raise Exception(f"Failed to duplicate host groups code {code}: {json.loads(data)['message']} {data_duplicate}")
 
 
-def list_all_host_groups_by_hostid(CentreonAPI_obj, host_id: int, params=None):
+# MONITORING
+
+
+def list_all_host_groups_monitoring_by_hostid(CentreonAPI_obj, host_id: int, params=None):
     """List all the host groups in real-time monitoring by host id."""
     return CentreonAPI_obj._get_all_paginated('GET', f'monitoring/hosts/{host_id}/hostgroups', params=params)
 
 
-def list_all_host_groups(CentreonAPI_obj, params=None):
+def list_all_host_groups_monitoring(CentreonAPI_obj, params=None):
     """Return all host groups."""
     return CentreonAPI_obj._get_all_paginated('GET', 'monitoring/hosts/groups', params=params)
