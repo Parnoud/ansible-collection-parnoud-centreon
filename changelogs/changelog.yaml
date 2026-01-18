@@ -1,0 +1,35 @@
+ancestor: null
+releases:
+  1.2.0:
+    changes:
+      deprecated_features:
+      - find_all_host_configuration
+      major_changes:
+      - Documentation creation
+      - Renaming some interne naming
+      release_summary: Adding support for monitoring server
+    modules:
+    - description: Generate and move the configuration files for all monitoring servers.
+      name: generate_configuration_all_monitoring_server
+      namespace: ''
+    - description: Generate and move the configuration files of the monitoring server
+      name: generate_configuration_all_monitoring_server
+      namespace: ''
+    - description: Generate, move and reload the configuration files for all monitoring
+        servers
+      name: generate_reload_configuration_all_monitoring_server
+      namespace: ''
+    - description: Generate, move and reload the configuration files of the monitoring
+        server
+      name: generate_reload_configuration_monitoring_server
+      namespace: ''
+    - description: List all monitoring servers configurations
+      name: list_all_monitoring_servers_configurations
+      namespace: ''
+    - description: Reload the configuration files for all monitoring servers
+      name: reload_configuration_all_monitoring_server
+      namespace: ''
+    - description: Reload the configuration files of the monitoring server
+      name: reload_configuration_monitoring_server
+      namespace: ''
+    release_date: '2026-01-18'

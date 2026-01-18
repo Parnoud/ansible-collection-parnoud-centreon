@@ -15,6 +15,48 @@ plugins:
       version_added: null
   lookup: {}
   module:
+    create_host_configuration:
+      description: Create a host configuration
+      name: create_host_configuration
+      namespace: ''
+      version_added: null
+    delete_host_configuration:
+      description: Delete a host configuration
+      name: delete_host_configuration
+      namespace: ''
+      version_added: null
+    find_all_host_configurations:
+      description: Return all host configurations.
+      name: find_all_host_configurations
+      namespace: ''
+      version_added: null
+    generate_configuration_all_monitoring_server:
+      description: Generate and move the configuration files for all monitoring servers.
+      name: generate_configuration_all_monitoring_server
+      namespace: ''
+      version_added: null
+    generate_configuration_monitoring_server:
+      description: Generate and move the configuration files of the monitoring server
+      name: generate_configuration_monitoring_server
+      namespace: ''
+      version_added: null
+    generate_reload_configuration_all_monitoring_server:
+      description: Generate, move and reload the configuration files for all monitoring
+        servers
+      name: generate_reload_configuration_all_monitoring_server
+      namespace: ''
+      version_added: null
+    generate_reload_configuration_monitoring_server:
+      description: Generate, move and reload the configuration files of the monitoring
+        server
+      name: generate_reload_configuration_monitoring_server
+      namespace: ''
+      version_added: null
+    list_all_monitoring_servers_configurations:
+      description: List all monitoring servers configurations.
+      name: list_all_monitoring_servers_configurations
+      namespace: ''
+      version_added: null
     manage_host:
       description: Manage host in Centreon via API v2
       name: manage_host
@@ -25,9 +67,24 @@ plugins:
       name: manage_host_groups
       namespace: ''
       version_added: null
+    partially_update_host_configuration:
+      description: Partially update a host configuration.
+      name: partially_update_host_configuration
+      namespace: ''
+      version_added: null
+    reload_configuration_all_monitoring_server:
+      description: Reload the configuration files for all monitoring servers
+      name: reload_configuration_all_monitoring_server
+      namespace: ''
+      version_added: null
+    reload_configuration_monitoring_server:
+      description: Reload the configuration files of the monitoring server
+      name: reload_configuration_monitoring_server
+      namespace: ''
+      version_added: null
   netconf: {}
   shell: {}
   strategy: {}
   test: {}
   vars: {}
-version: 1.1.1
+version: 1.2.0
