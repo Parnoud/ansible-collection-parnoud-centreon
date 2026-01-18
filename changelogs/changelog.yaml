@@ -61,3 +61,25 @@ releases:
       name: parnoud.centreon.update_host_group
       namespace: ''
     release_date: '2026-01-18'
+  1.4.0:
+    changes:
+      major_changes:
+      - Module creation host severity
+      - Update Documentation
+    modules:
+    - description: Create a host severity
+      name: parnoud.centreon.create_host_severity
+      namespace: ''
+    - description: Delete a host severity configuration
+      name: parnoud.centreon.delete_host_severity
+      namespace: ''
+    - description: Get a host severity configuration
+      name: parnoud.centreon.get_host_severity
+      namespace: ''
+    - description: List of all host severity configurations
+      name: parnoud.centreon.list_all_host_severities
+      namespace: ''
+    - description: Update a host severity
+      name: parnoud.centreon.update_host_severity
+      namespace: ''
+    release_date: '2026-01-18'

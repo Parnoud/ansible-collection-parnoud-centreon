@@ -25,6 +25,11 @@ plugins:
       name: create_host_configuration
       namespace: ''
       version_added: null
+    create_host_severity:
+      description: Create a host configuration
+      name: create_host_severity
+      namespace: ''
+      version_added: null
     delete_host_configuration:
       description: Delete a host configuration
       name: delete_host_configuration
@@ -35,9 +40,19 @@ plugins:
       name: delete_host_group
       namespace: ''
       version_added: null
+    delete_host_severity:
+      description: Delete a host severity configuration
+      name: delete_host_severity
+      namespace: ''
+      version_added: null
     find_all_host_configurations:
       description: Return all host configurations.
       name: find_all_host_configurations
+      namespace: ''
+      version_added: null
+    find_all_host_template_configurations:
+      description: Return all host template configurations.
+      name: find_all_host_template_configurations
       namespace: ''
       version_added: null
     generate_configuration_all_monitoring_server:
@@ -63,13 +78,23 @@ plugins:
       namespace: ''
       version_added: null
     get_host_group:
-      description: Get an existing host group
+      description: Get an existing host group configuration
       name: get_host_group
+      namespace: ''
+      version_added: null
+    get_host_severity:
+      description: Get a host severity configuration
+      name: get_host_severity
       namespace: ''
       version_added: null
     list_all_host_groups:
       description: Return all host group configurations.
       name: list_all_host_groups
+      namespace: ''
+      version_added: null
+    list_all_host_severities:
+      description: List of all host severity configurations.
+      name: list_all_host_severities
       namespace: ''
       version_added: null
     list_all_monitoring_servers_configurations:
@@ -103,8 +128,13 @@ plugins:
       namespace: ''
       version_added: null
     update_host_group:
-      description: Update host group
+      description: Update host group configuration
       name: update_host_group
+      namespace: ''
+      version_added: null
+    update_host_severity:
+      description: Update host sevirity configuration
+      name: update_host_severity
       namespace: ''
       version_added: null
   netconf: {}
@@ -112,4 +142,4 @@ plugins:
   strategy: {}
   test: {}
   vars: {}
-version: 1.3.0
+version: 1.4.0

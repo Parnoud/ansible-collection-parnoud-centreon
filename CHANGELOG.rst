@@ -4,6 +4,24 @@ Parnoud Centreon Collection Release Notes
 
 .. contents:: Topics
 
+v1.4.0
+======
+
+Major Changes
+-------------
+
+- Module creation host severity
+- Update Documentation
+
+New Modules
+-----------
+
+- parnoud.centreon.create_host_severity - Create a host severity
+- parnoud.centreon.delete_host_severity - Delete a host severity configuration
+- parnoud.centreon.get_host_severity - Get a host severity configuration
+- parnoud.centreon.list_all_host_severities - List of all host severity configurations
+- parnoud.centreon.update_host_severity - Update a host severity
+
 v1.3.0
 ======
 
