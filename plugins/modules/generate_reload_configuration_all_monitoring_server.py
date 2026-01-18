@@ -16,11 +16,6 @@ short_description: Generate, move and reload the configuration files for all mon
 description:
     - Generate, move and reload the configuration files for all monitoring servers
 author: "Pierre ARNOUD (@parnoud)"
-options:
-    monitoring_server_id:
-        description: host id
-        required: true
-        type: int
 extends_documentation_fragment:
     - parnoud.centreon.base_options
 '''
@@ -32,7 +27,6 @@ EXAMPLES = r'''
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
-        monitoring_server_id: 1
 '''
 
 RETURN = r'''
@@ -71,9 +65,6 @@ def _generate_reload_configuration_all_monitoring_server(module):
 
 def main():
     argument_spec = base_argument_spec()
-    argument_spec.update(
-        monitoring_server_id=dict(type='int', required=True),
-    )
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True

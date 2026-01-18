@@ -27,7 +27,6 @@ EXAMPLES = r'''
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
-        monitoring_server_id: 1
 '''
 
 RETURN = r'''
