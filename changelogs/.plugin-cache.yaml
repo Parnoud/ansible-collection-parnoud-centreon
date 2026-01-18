@@ -15,6 +15,11 @@ plugins:
       version_added: null
   lookup: {}
   module:
+    add_host_group:
+      description: Add a new host group configuration
+      name: add_host_group
+      namespace: ''
+      version_added: null
     create_host_configuration:
       description: Create a host configuration
       name: create_host_configuration
@@ -23,6 +28,11 @@ plugins:
     delete_host_configuration:
       description: Delete a host configuration
       name: delete_host_configuration
+      namespace: ''
+      version_added: null
+    delete_host_group:
+      description: Delete host group
+      name: delete_host_group
       namespace: ''
       version_added: null
     find_all_host_configurations:
@@ -50,6 +60,16 @@ plugins:
       description: Generate, move and reload the configuration files of the monitoring
         server
       name: generate_reload_configuration_monitoring_server
+      namespace: ''
+      version_added: null
+    get_host_group:
+      description: Get an existing host group
+      name: get_host_group
+      namespace: ''
+      version_added: null
+    list_all_host_groups:
+      description: Return all host group configurations.
+      name: list_all_host_groups
       namespace: ''
       version_added: null
     list_all_monitoring_servers_configurations:
@@ -82,9 +102,14 @@ plugins:
       name: reload_configuration_monitoring_server
       namespace: ''
       version_added: null
+    update_host_group:
+      description: Update host group
+      name: update_host_group
+      namespace: ''
+      version_added: null
   netconf: {}
   shell: {}
   strategy: {}
   test: {}
   vars: {}
-version: 1.2.0
+version: 1.3.0

@@ -33,3 +33,31 @@ releases:
       name: reload_configuration_monitoring_server
       namespace: ''
     release_date: '2026-01-18'
+  1.3.0:
+    changes:
+      bugfixes:
+      - manage_host update issue with list
+      - manage_host_group update issue with list
+      major_changes:
+      - Module creation Host_group
+      release_summary: Adding support for Host_group
+    modules:
+    - description: Add a new host group configuration
+      name: parnoud.centreon.add_host_group
+      namespace: ''
+    - description: Delete host group
+      name: parnoud.centreon.delete_host_group
+      namespace: ''
+    - description: Return all host configurations
+      name: parnoud.centreon.find_all_host_configurations
+      namespace: ''
+    - description: Get an existing host group
+      name: parnoud.centreon.get_host_group
+      namespace: ''
+    - description: Return all host group configurations
+      name: parnoud.centreon.list_all_host_groups
+      namespace: ''
+    - description: Update host group
+      name: parnoud.centreon.update_host_group
+      namespace: ''
+    release_date: '2026-01-18'
