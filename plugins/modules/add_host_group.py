@@ -104,7 +104,7 @@ def add_host_group_with_parameters(module):
         validate_certs=module.params.get('validate_certs'),
         timeout=module.params.get('timeout'),
     )
-    host_group_data = {
+    hostgroup_data = {
         'name': module.params.get('name'),
         'alias': module.params.get('alias'),
         'icon_id': module.params.get('icon_id'),
@@ -113,9 +113,9 @@ def add_host_group_with_parameters(module):
         'hosts': module.params.get('hosts'),
     }
 
-    host_group_data = {k: v for k, v in host_group_data.items() if v is not None}
+    hostgroup_data = {k: v for k, v in hostgroup_data.items() if v is not None}
 
-    result = add_host_group(api, host_group_data=host_group_data)
+    result = add_host_group(api, hostgroup_data=hostgroup_data)
     return True, result
 
 
