@@ -602,8 +602,6 @@ def manage_host(module):
 
         if module.params['new_name']:
             host_data['name'] = module.params['new_name']
-        else:
-            host_data.pop('name', None)
 
         if module.params['host_id']:
             host_id = module.params['host_id']
@@ -627,14 +625,19 @@ def manage_host(module):
         current_host_data["categories"] = [item["id"] for item in current_host_data["categories"]]
         if host_data.get('categories'):
             current_host_data["categories"] += list(host_data['categories'])
+            host_data.pop('categories')
 
         current_host_data["groups"] = [item["id"] for item in current_host_data["groups"]]
         if host_data.get('groups'):
             current_host_data["groups"] += list(host_data['groups'])
+            host_data.pop('groups')
 
         current_host_data["templates"] = [item["id"] for item in current_host_data["templates"]]
         if host_data.get('templates'):
             current_host_data["templates"] += list(host_data['templates'])
+            host_data.pop('templates')
+
+        current_host_data.update(host_data)
 
         if host_id:
             if partially_update_host_configuration(api, host_id, current_host_data):
