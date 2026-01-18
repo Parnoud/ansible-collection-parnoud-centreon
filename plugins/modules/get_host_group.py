@@ -12,7 +12,7 @@
 DOCUMENTATION = r'''
 ---
 module: get_host_group
-short_description: Get an existing host group
+short_description: Get an existing host group configuration
 description:
     - Get an existing host group with the given host_id
 author: "Pierre ARNOUD (@parnoud)"
@@ -27,7 +27,7 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 ---
-- name: Get an existing host group
+- name: Get an existing host group configuration
   parnoud.centreon.get_host_group:
         hostname: centreon.com/centreon/api/latest
         username: user
@@ -38,9 +38,9 @@ EXAMPLES = r'''
 RETURN = r'''
 ---
 result:
-    description: 0 to indicate delete
+    description: dict of the host group configuration
     returned: success
-    type: int
+    type: dict
     sample :
         {
             "name": "MySQL-Servers",

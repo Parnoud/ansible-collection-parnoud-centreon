@@ -18,192 +18,235 @@ description:
 author: "Pierre ARNOUD (@parnoud)"
 options:
     monitoring_server_id:
-        description: ID of the monitoring server where the host will be created.
+        description: ID of the host's monitoring server
         required: true
         type: int
     name:
-        description: Host name.
+        description: Host name
         required: true
         type: str
     address:
-        description: Host address.
+        description: IP or domain of the host
         required: true
         type: str
     alias:
-        description: Host alias.
+        description: Host alias
         required: false
         type: str
+        default: null
     snmp_community:
-        description: SNMP community string.
+        description: Community of the SNMP agent
         required: false
         type: str
+        default: null
     snmp_version:
-        description: SNMP version.
+        description: Version of the SNMP agent.
         required: false
         type: str
         choices: ['1', '2c', '3']
+        default: null
     geo_coords:
-        description: Geographical coordinates of the host.
+        description: Geographic coordinates of the host
         required: false
         type: str
+        default: null
     timezone_id:
-        description: Timezone ID for the host.
+        description: Timezone ID
         required: false
         type: int
+        default: null
     severity_id:
-        description: Severity ID for the host.
+        description: Severity ID
         required: false
         type: int
+        default: null
     check_command_id:
-        description: Check command ID for the host.
+        description: Check command ID. Must be of type 'Check'
         required: false
         type: int
+        default: null
     check_command_args:
-        description: Arguments for the check command.
+        description: Check command arguments
         required: false
-        type: dict
+        type: list
+        elements: str
+        default: null
     check_timeperiod_id:
-        description: Check time period ID for the host.
+        description: Check command timeperiod ID
         required: false
         type: int
+        default: null
     max_check_attempts:
-        description: Maximum number of check attempts.
+        description: Define the number of times that the monitoring engine will retry the host check command if it returns any non-OK state
         required: false
         type: int
+        default: null
     normal_check_interval:
-        description: Normal check interval.
+        description: Define the number of 'time units' between regularly scheduled checks of the host.
         required: false
         type: int
+        default: null
     retry_check_interval:
-        description: Retry check interval.
+        description: Define the number of "time units" to wait before scheduling a re-check for this host after a non-UP state was detected.
         required: false
         type: int
+        default: null
     active_check_enabled:
-        description: Whether active checks are enabled.
+        description: Indicates whether active checks are enabled or not
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     passive_check_enabled:
-        description: Whether passive checks are enabled.
+        description: Indicates whether passive checks are enabled or not
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     notifications_enabled:
-        description: Whether notifications are enabled.
+        description: Specify whether notifications for this host are enabled or not
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     notification_options:
-        description: Notification options.
+        description: Define the states of the host for which notifications should be sent out.
         required: false
         type: int
         choices: [0, 1, 2, 4, 8, 16]
+        default: null
     notification_interval:
-        description: Notification interval.
+        description: Define the number of "time units" to wait before re-notifying a contact that this host is still down or unreachable.
         required: false
         type: int
+        default: null
     notification_timeperiod_id:
-        description: Notification time period ID.
+        description: Notification timeperiod ID
         required: false
         type: int
+        default: null
     add_inherited_contact_group:
-        description: Whether to add inherited contact groups.
+        description: Only used when notification inheritance for hosts and services is set to vertical inheritance only.
         required: false
         type: bool
+        default: null
     add_inherited_contact:
-        description: Whether to add inherited contacts.
+        description: Only used when notification inheritance for hosts and services is set to vertical inheritance only.
         required: false
         type: bool
+        default: null
     first_notification_delay:
-        description: First notification delay.
+        description: Define the number of "time units" to wait before sending out the first alert notification when this host enters a non-UP state.
         required: false
         type: int
+        default: null
     recovery_notification_delay:
-        description: Recovery notification delay.
+        description: Define the number of "time units" to wait before sending out the recovery notification when this host enters an UP state.
         required: false
         type: int
+        default: null
     acknowledgement_timeout:
-        description: Acknowledgement timeout.
+        description: Specify a duration of acknowledgement for this host.
         required: false
         type: int
+        default: null
     freshness_threshold:
-        description: Freshness threshold.
+        description: Specify the freshness threshold (in seconds) for this host.
         required: false
         type: int
+        default: null
     flap_detection_enabled:
-        description: Whether flap detection is enabled.
+        description: Indicates whether the flap detection is enabled or not
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     low_flap_threshold:
-        description: Low flap threshold.
+        description: Indicates whether the flap detection is enabled or not
         required: false
         type: int
+        default: null
     high_flap_threshold:
-        description: High flap threshold.
+        description: Specify the high state change threshold used in flap detection for this host
         required: false
         type: int
+        default: null
     event_handler_enabled:
-        description: Whether event handler is enabled.
+        description: Indicates whether the event handler is enabled or not
         required: false
         type: int
         choices: [0, 1, 2]
+        default: null
     event_handler_command_id:
-        description: Event handler command ID.
+        description: Event handler command ID
         required: false
         type: int
+        default: null
     event_handler_command_args:
-        description: Arguments for the event handler command.
+        description: Event handler command arguments
         required: false
-        type: dict
+        type: list
+        elements: str
+        default: null
     note_url:
-        description: Note URL for the host.
+        description: Define an optional URL that can be used to provide more information about the host.
         required: false
         type: str
+        default: null
     note:
-        description: Note for the host.
+        description: Define an optional note.
         required: false
         type: str
+        default: null
     action_url:
-        description: Action URL for the host.
+        description: Define an optional URL that can be used to provide more actions to be performed on the host.
         required: false
         type: str
+        default: null
     icon_id:
-        description: Icon ID for the host.
+        description: Define the ID of the image that should be associated with this host
         required: false
         type: int
+        default: null
     icon_alternative:
-        description: Icon alternative text for the host.
+        description: Define an optional string that is used as alternative description for the icon
         required: false
         type: str
+        default: null
     comment:
-        description: Comment for the host.
+        description: Host comments
         required: false
         type: str
+        default: null
     is_activated:
-        description: Whether the host is activated.
+        description: Indicates whether the host template is activated or not
         required: false
         type: bool
+        default: null
     categories:
-        description: Categories associated with the host.
+        description: Define the host category IDs that should be associated with this host
         required: false
         type: list
         elements: int
+        default: null
     groups:
-        description: Groups associated with the host.
+        description: Define the host group IDs that should be associated with this host
         required: false
         type: list
         elements: int
+        default: null
     templates:
-        description: Templates associated with the host.
+        description: Define the parent host template IDs that should be associated with this host.
         required: false
         type: list
         elements: int
+        default: null
     macros:
-        description: Macros associated with the host.
+        description: Host macros defined for the host (directly or through a template or command inheritance)
         required: false
         type: list
         elements: dict
+        default: null
 extends_documentation_fragment:
     - parnoud.centreon.base_options
 '''
@@ -383,7 +426,7 @@ def main():
         timezone_id=dict(type='int', default=None),
         severity_id=dict(type='int', default=None),
         check_command_id=dict(type='int', default=None),
-        check_command_args=dict(type='dict', default=None),
+        check_command_args=dict(type='list', elements='str', default=None),
         check_timeperiod_id=dict(type='int', default=None),
         max_check_attempts=dict(type='int', default=None),
         normal_check_interval=dict(type='int', default=None),
@@ -405,7 +448,7 @@ def main():
         high_flap_threshold=dict(type='int', default=None),
         event_handler_enabled=dict(type='int', choices=[0, 1, 2], default=None),
         event_handler_command_id=dict(type='int', default=None),
-        event_handler_command_args=dict(type='dict', default=None),
+        event_handler_command_args=dict(type='list', elements='str', default=None),
         note_url=dict(type='str', default=None),
         note=dict(type='str', default=None),
         action_url=dict(type='str', default=None),
@@ -426,7 +469,7 @@ def main():
     if status:
         module.exit_json(succes=True, result=result)
     else:
-        module.fail_json(object=[])
+        module.fail_json(result=[])
 
 
 if __name__ == '__main__':

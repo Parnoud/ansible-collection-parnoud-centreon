@@ -12,9 +12,9 @@
 DOCUMENTATION = r'''
 ---
 module: update_host_group
-short_description: Update host group
+short_description: Update host group configuration
 description:
-    - Update host group with givens parameters
+    - Update host group configuration with givens parameters
     - API Limitation, We are forced to send a hosts list (empty or not)
     - Default hosts list is empty so if you don't mention it it will wipe hosts associated with the host group
 author: "Pierre ARNOUD (@parnoud)"
@@ -60,7 +60,7 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 ---
-- name: Create host configuration
+- name: Create host group configuration
   parnoud.centreon.add_host_group:
     hostname: centreon.com/centreon/api/latest
     username: user
@@ -71,7 +71,7 @@ EXAMPLES = r'''
 RETURN = r'''
 ---
 result:
-    description: Add a new host group configuration
+    description: Update host group configuration
     returned: success
     type: dict
     sample :
@@ -111,7 +111,7 @@ def add_host_group_with_parameters(module):
         validate_certs=module.params.get('validate_certs'),
         timeout=module.params.get('timeout'),
     )
-    host_group_data = {
+    hostgroup_data = {
         'name': module.params.get('name'),
         'alias': module.params.get('alias'),
         'icon_id': module.params.get('icon_id'),
@@ -120,9 +120,9 @@ def add_host_group_with_parameters(module):
         'hosts': module.params.get('hosts'),
     }
 
-    host_group_data = {k: v for k, v in host_group_data.items() if v is not None}
+    hostgroup_data = {k: v for k, v in hostgroup_data.items() if v is not None}
 
-    result = add_host_group(api, host_group_data=host_group_data)
+    result = add_host_group(api, hostgroup_id=module.params.get('hostgroup_id'), hostgroup_data=hostgroup_data)
     return True, result
 
 
