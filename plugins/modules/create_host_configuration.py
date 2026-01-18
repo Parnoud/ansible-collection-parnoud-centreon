@@ -222,7 +222,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 ---
-object:
+result:
     description: 0 to indicate delete
     returned: success
     type: dict
@@ -422,9 +422,9 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True
     )
-    status, object = create_host_configuration_with_parameters(module)
+    status, result = create_host_configuration_with_parameters(module)
     if status:
-        module.exit_json(succes=True, object=object)
+        module.exit_json(succes=True, result=result)
     else:
         module.fail_json(object=[])
 
