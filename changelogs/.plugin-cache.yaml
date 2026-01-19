@@ -20,6 +20,11 @@ plugins:
       name: add_host_group
       namespace: ''
       version_added: null
+    create_host_category:
+      description: Create a host category
+      name: create_host_category
+      namespace: ''
+      version_added: null
     create_host_configuration:
       description: Create a host configuration
       name: create_host_configuration
@@ -28,6 +33,11 @@ plugins:
     create_host_severity:
       description: Create a host configuration
       name: create_host_severity
+      namespace: ''
+      version_added: null
+    delete_host_category:
+      description: Delete a host category configuration
+      name: delete_host_category
       namespace: ''
       version_added: null
     delete_host_configuration:
@@ -43,6 +53,11 @@ plugins:
     delete_host_severity:
       description: Delete a host severity configuration
       name: delete_host_severity
+      namespace: ''
+      version_added: null
+    delete_service_category:
+      description: Delete a service category configuration
+      name: delete_service_category
       namespace: ''
       version_added: null
     find_all_host_configurations:
@@ -67,7 +82,7 @@ plugins:
       version_added: null
     generate_reload_configuration_all_monitoring_server:
       description: Generate, move and reload the configuration files for all monitoring
-        servers
+        servers.
       name: generate_reload_configuration_all_monitoring_server
       namespace: ''
       version_added: null
@@ -77,8 +92,13 @@ plugins:
       name: generate_reload_configuration_monitoring_server
       namespace: ''
       version_added: null
+    get_host_category:
+      description: Get a host category configuration
+      name: get_host_category
+      namespace: ''
+      version_added: null
     get_host_group:
-      description: Get an existing host group configuration
+      description: Get an existing host group.
       name: get_host_group
       namespace: ''
       version_added: null
@@ -87,13 +107,18 @@ plugins:
       name: get_host_severity
       namespace: ''
       version_added: null
+    list_all_host_categories:
+      description: List of host category configurations
+      name: list_all_host_categories
+      namespace: ''
+      version_added: null
     list_all_host_groups:
       description: Return all host group configurations.
       name: list_all_host_groups
       namespace: ''
       version_added: null
     list_all_host_severities:
-      description: List of all host severity configurations.
+      description: List of all host severity configurations
       name: list_all_host_severities
       namespace: ''
       version_added: null
@@ -118,7 +143,7 @@ plugins:
       namespace: ''
       version_added: null
     reload_configuration_all_monitoring_server:
-      description: Reload the configuration files for all monitoring servers
+      description: Reload the configuration files for all monitoring servers.
       name: reload_configuration_all_monitoring_server
       namespace: ''
       version_added: null
@@ -127,13 +152,18 @@ plugins:
       name: reload_configuration_monitoring_server
       namespace: ''
       version_added: null
+    update_host_category:
+      description: Update a host severity
+      name: update_host_category
+      namespace: ''
+      version_added: null
     update_host_group:
-      description: Update host group configuration
+      description: Update host group.
       name: update_host_group
       namespace: ''
       version_added: null
     update_host_severity:
-      description: Update host sevirity configuration
+      description: Update a host severity
       name: update_host_severity
       namespace: ''
       version_added: null
@@ -142,4 +172,4 @@ plugins:
   strategy: {}
   test: {}
   vars: {}
-version: 1.4.0
+version: 1.5.0

@@ -4,6 +4,24 @@ Parnoud Centreon Collection Release Notes
 
 .. contents:: Topics
 
+v1.5.0
+======
+
+Major Changes
+-------------
+
+- Module creation host category
+- Update Documentation
+
+New Modules
+-----------
+
+- parnoud.centreon.create_host_category - Create a host category
+- parnoud.centreon.delete_host_category - Delete a host severity configuration
+- parnoud.centreon.get_host_category - Get a host category configuration
+- parnoud.centreon.list_all_host_categories - List of host category configurations
+- parnoud.centreon.update_host_category - Update a host category
+
 v1.4.0
 ======
 

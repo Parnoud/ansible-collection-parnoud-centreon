@@ -83,3 +83,25 @@ releases:
       name: parnoud.centreon.update_host_severity
       namespace: ''
     release_date: '2026-01-18'
+  1.5.0:
+    changes:
+      major_changes:
+      - Module creation host category
+      - Update Documentation
+    modules:
+    - description: Create a host category
+      name: parnoud.centreon.create_host_category
+      namespace: ''
+    - description: Delete a host severity configuration
+      name: parnoud.centreon.delete_host_category
+      namespace: ''
+    - description: Get a host category configuration
+      name: parnoud.centreon.get_host_category
+      namespace: ''
+    - description: List of host category configurations
+      name: parnoud.centreon.list_all_host_categories
+      namespace: ''
+    - description: Update a host category
+      name: parnoud.centreon.update_host_category
+      namespace: ''
+    release_date: '2026-01-19'
