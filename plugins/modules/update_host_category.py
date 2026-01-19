@@ -24,11 +24,11 @@ options:
     name:
         description: Host category name
         type: str
-        default: null
+        required: True
     alias:
         description: Host category alias
         type: str
-        default: null
+        required: True
     is_activated:
         description: is active or not (enable/disable)
         type: bool
@@ -103,8 +103,8 @@ def main():
     argument_spec = base_argument_spec()
     argument_spec.update(
         hostcategory_id=dict(type='int', required=True),
-        name=dict(type='str', default=None),
-        alias=dict(type='str', default=None),
+        name=dict(type='str', required=True),
+        alias=dict(type='str', required=True),
         is_activated=dict(type='bool', default=None),
         comment=dict(type='str', default=None),
     )

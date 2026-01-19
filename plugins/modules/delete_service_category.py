@@ -28,7 +28,7 @@ extends_documentation_fragment:
 EXAMPLES = r'''
 ---
 - name: Delete a service category configuration by id
-  parnoud.centreon.delete_host_category:
+  parnoud.centreon.delete_services_category:
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
@@ -47,10 +47,10 @@ result:
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.parnoud.centreon.plugins.module_utils.centreon_api import CentreonAPI
 from ansible_collections.parnoud.centreon.plugins.module_utils.argument_spec import base_argument_spec
-from ansible_collections.parnoud.centreon.plugins.module_utils.host_category import delete_host_category
+from ansible_collections.parnoud.centreon.plugins.module_utils.service_category import delete_service_category
 
 
-def delete_host_category_by_id(module):
+def delete_service_category_by_id(module):
     """entry point for module execution"""
 
     api = CentreonAPI(
@@ -62,26 +62,26 @@ def delete_host_category_by_id(module):
         timeout=module.params.get('timeout'),
     )
 
-    if delete_host_category(api, hostcategory_id=module.params.get('hostcategory_id')):
+    if delete_service_category(api, hostcategory_id=module.params.get('servicecategory_id')):
         return True, 0
     else:
-        return False, module.params.get('hostcategory_id')
+        return False, module.params.get('servicecategory_id')
 
 
 def main():
     argument_spec = base_argument_spec()
     argument_spec.update(
-        hostcategory_id=dict(type='int', required=True),
+        servicecategory_id=dict(type='int', required=True),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True
     )
-    status, hostcategory_id = delete_host_category_by_id(module)
+    status, servicecategory_id = delete_service_category_by_id(module)
     if status:
-        module.exit_json(succes=True, result=hostcategory_id)
+        module.exit_json(succes=True, result=servicecategory_id)
     else:
-        module.fail_json(result=hostcategory_id)
+        module.fail_json(result=servicecategory_id)
 
 
 if __name__ == '__main__':

@@ -45,8 +45,8 @@ EXAMPLES = r'''
     hostname: centreon.com/centreon/api/latest
     username: user
     password: pass
-    name: category
-    alias: category
+    name: host-category
+    alias: host-category
 '''
 
 RETURN = r'''
@@ -81,16 +81,16 @@ def create_host_category_with_parameters(module):
         validate_certs=module.params.get('validate_certs'),
         timeout=module.params.get('timeout'),
     )
-    hostseverity_data = {
+    hostcategory_data = {
         'name': module.params.get('name'),
         'alias': module.params.get('alias'),
         'is_activated': module.params.get('is_activated'),
         'comment': module.params.get('comment'),
     }
 
-    hostseverity_data = {k: v for k, v in hostseverity_data.items() if v is not None}
+    hostcategory_data = {k: v for k, v in hostcategory_data.items() if v is not None}
 
-    result = create_host_category(api, hostseverity_data=hostseverity_data)
+    result = create_host_category(api, hostcategory_data=hostcategory_data)
     return True, result
 
 

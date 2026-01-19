@@ -69,7 +69,7 @@ def get_host_category_by_id(module):
         timeout=module.params.get('timeout'),
     )
 
-    result = get_host_category(api, hostseverity_id=module.params.get('hostcategory_id'))
+    result = get_host_category(api, hostcategory_id=module.params.get('hostcategory_id'))
     return True, result
 
 
