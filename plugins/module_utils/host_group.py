@@ -33,7 +33,7 @@ def add_host_group(CentreonAPI_obj, hostgroup_data):
     elif code == 409:
         raise Exception(f"Conflict: {json.loads(data)['message']}")
     else:
-        raise Exception(f"Failed code {code}: {json.loads(data)['message']} {hostgroup_data}")
+        raise Exception(f"Failed : {json.loads(data)['message']}")
 
 
 def get_host_group(CentreonAPI_obj, hostgroup_id: int):

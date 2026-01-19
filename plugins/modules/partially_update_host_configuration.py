@@ -267,7 +267,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 ---
-host_id:
+result:
     description: 0 to indicate delete
     returned: success
     type: int
@@ -399,11 +399,11 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True
     )
-    status, object = partially_update_host_configuration_with_parameters(module)
+    status, result = partially_update_host_configuration_with_parameters(module)
     if status:
-        module.exit_json(succes=True, object=object)
+        module.exit_json(succes=True, result=result)
     else:
-        module.fail_json(object=[])
+        module.fail_json(result=[])
 
 
 if __name__ == '__main__':

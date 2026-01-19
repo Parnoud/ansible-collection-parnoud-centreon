@@ -136,7 +136,7 @@ def main():
     if status:
         module.exit_json(succes=True, result=result)
     else:
-        module.fail_json(object=[])
+        module.fail_json(result=[])
 
 
 if __name__ == '__main__':

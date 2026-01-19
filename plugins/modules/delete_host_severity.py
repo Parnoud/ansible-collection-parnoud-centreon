@@ -14,7 +14,7 @@ DOCUMENTATION = r'''
 module: delete_host_severity
 short_description: Delete a host severity configuration
 description:
-    - Delete a host severity configurationwith the given hostseverity_id
+    - Delete a host severity configuration with the given hostseverity_id
 author: "Pierre ARNOUD (@parnoud)"
 options:
     hostseverity_id:
@@ -37,7 +37,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 ---
-hostseverity_id:
+result:
     description: 0 to indicate delete
     returned: success
     type: int
@@ -79,9 +79,9 @@ def main():
     )
     status, hostseverity_id = delete_host_severity_by_id(module)
     if status:
-        module.exit_json(succes=True, hostseverity_id=hostseverity_id)
+        module.exit_json(succes=True, result=hostseverity_id)
     else:
-        module.fail_json(hostseverity_id=hostseverity_id)
+        module.fail_json(result=hostseverity_id)
 
 
 if __name__ == '__main__':

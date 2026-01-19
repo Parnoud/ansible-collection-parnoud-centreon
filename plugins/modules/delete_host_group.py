@@ -37,7 +37,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 ---
-hostgroup_id:
+result:
     description: 0 to indicate delete
     returned: success
     type: int
@@ -79,9 +79,9 @@ def main():
     )
     status, hostgroup_id = delete_host_group_by_id(module)
     if status:
-        module.exit_json(succes=True, host_id=0)
+        module.exit_json(succes=True, result=0)
     else:
-        module.fail_json(host_id=hostgroup_id)
+        module.fail_json(result=hostgroup_id)
 
 
 if __name__ == '__main__':
