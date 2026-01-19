@@ -18,41 +18,11 @@ description:
     - Get Centreon host as inventory hosts
     - Uses any file which ends with centreon.yml or centreon.yaml as YAML configuration file.
 options:
-    hostname:
-        description: URL to Centreon API v2.
-        required: true
-        env:
-            - name: CENTREON_HOSTNAME
-    username:
-        description: Username to Centreon API v2
-        required: false
-        env:
-            - name: CENTREON_USERNAME
-    password:
-        description: Password to Centreon API v2
-        required: false
-        env:
-            - name: CENTREON_PASSWORD
-    token:
-        description: Token to Centreon API v2
-        required: false
-        env:
-            - name: CENTREON_TOKEN
-    validate_certs:
-        description: Whether to validate SSL certificates.
-        type: bool
-        default: false
-        env:
-            - name: CENTREON_VALIDATE_CERTS
-    timeout:
-        description: Timeout for API requests.
-        type: int
-        default: 30
-        env:
-            - name: CENTREON_TIMEOUT
     search:
         description: search criteria for fetching hosts (list or dict).
+        type: raw
         required: false
+        default: null
     attributes:
         description:
             - attributes to include in the inventory.
@@ -73,6 +43,8 @@ options:
             - categories
             - groups
             - is_activated
+extends_documentation_fragment:
+    - parnoud.centreon.base_options
 '''
 
 EXAMPLES = r"""

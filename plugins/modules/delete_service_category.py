@@ -11,7 +11,7 @@
 
 DOCUMENTATION = r'''
 ---
-module: delete_services_category
+module: delete_service_category
 short_description: Delete a service category configuration
 description:
     - Delete a service category configuration with the given hostseverity_id
@@ -28,7 +28,7 @@ extends_documentation_fragment:
 EXAMPLES = r'''
 ---
 - name: Delete a service category configuration by id
-  parnoud.centreon.delete_services_category:
+  parnoud.centreon.delete_service_category:
         hostname: centreon.com/centreon/api/latest
         username: user
         password: pass
